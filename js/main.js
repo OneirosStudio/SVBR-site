@@ -129,14 +129,16 @@ $$(".magnetic").forEach((el) => {
 /* ── HERO ──────────────────────────────────── */
 const heroTitle = $("#heroTitle");
 
-function applyProject(i, skipTitle = false) {
+function applyProject(i, skipTitle = false, skipBg = false) {
   const p = PROJECTS[i];
   $("#heroNum").textContent = `(0${i + 1})`;
   if (!skipTitle) heroTitle.textContent = p.title;
   $("#heroCat").textContent = p.cat;
   $("#heroIdx").textContent = `0${i + 1}`;
   $("#nextName").textContent = `SUIVANT — ${PROJECTS[(i + 1) % PROJECTS.length].title}`;
-  paintBg($("#heroBg"), p);
+  // skipBg : pendant la transition, le fond de base ne doit PAS être repeint
+  // en plein balayage (l'ancienne image disparaîtrait d'un coup — "saut")
+  if (!skipBg) paintBg($("#heroBg"), p);
   $(".hero__note").style.opacity = hasMedia(p) ? 0 : 0.75;
   const fg = p.dark ? "#0E0D0B" : "#FFFFFF";
   gsap.set("#view-featured", { color: fg });
@@ -180,7 +182,12 @@ function goTo(i, dir = 1) {
 
   const bgNext = $("#heroBgNext");
   paintBg(bgNext, p);
-  gsap.set(bgNext, { opacity: 1, clipPath: dir > 0 ? "inset(100% 0 0 0)" : "inset(0 0 100% 0)" });
+  /* balayage vertical accompagnant la cascade du titre :
+     dir > 0 → l'image se révèle de haut en bas (l'inverse au retour) */
+  gsap.set(bgNext, { opacity: 1, clipPath: dir > 0 ? "inset(0% 0% 100% 0%)" : "inset(100% 0% 0% 0%)" });
+  const mediaIn = bgNext.querySelector(".bg-media");
+  const mediaOut = $("#heroBg").querySelector(".bg-media");
+  if (mediaIn) gsap.set(mediaIn, { yPercent: -4 * dir, scale: 1.12 });
 
   /* ── crossfade en cascade : l'ancien titre MONTE pendant que le
      nouveau arrive (clone superposé) — aucun échange brutal de texte ── */
@@ -200,7 +207,12 @@ function goTo(i, dir = 1) {
       heroTitle.textContent = p.title; // …aussitôt remplacé (même frame, aucun flash)
       splitIn.revert();
       clone.remove();
-      paintBg($("#heroBg"), p);
+      /* bascule atomique : on DÉPLACE le média déjà décodé de next → base
+         (aucun re-chargement, aucun flash, une vidéo continue de jouer) */
+      const bg = $("#heroBg");
+      bg.style.background = p.color;
+      bg.innerHTML = "";
+      while (bgNext.firstChild) bg.appendChild(bgNext.firstChild);
       gsap.set(bgNext, { opacity: 0 });
       busy = false;
       lastSwitch = performance.now(); // le cooldown démarre à la FIN de l'anim
@@ -210,12 +222,17 @@ function goTo(i, dir = 1) {
   tl.to(splitOut.chars, { yPercent: -110 * dir, autoAlpha: 0, duration: 0.55, ease: "power3.in",
         stagger: { each: 0.022, from: dir > 0 ? "start" : "end" } }, 0)
     .to(["#heroNum", "#heroCat"], { autoAlpha: 0, y: -12 * dir, duration: 0.3 }, 0)
-    .to(bgNext, { clipPath: "inset(0% 0 0% 0)", duration: 0.75, ease: "power4.inOut" }, 0.05)
-    .add(() => { current = next; applyProject(next, true); }, 0.35) // méta/segments SANS toucher au titre
+    .to(bgNext, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.9, ease: "power3.inOut" }, 0.2)
+    .add(() => { current = next; applyProject(next, true, true); }, 0.35) // méta/segments SANS toucher au titre ni au fond
     .to(splitIn.chars, { yPercent: 0, rotate: 0, autoAlpha: 1, duration: 0.8, ease: "power4.out",
         stagger: { each: 0.026, from: dir > 0 ? "start" : "end" } }, 0.4)
     .fromTo(["#heroNum", "#heroCat"], { autoAlpha: 0, y: 16 * dir },
         { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: 0.06 }, 0.55);
+
+  /* travelling léger : l'image entrante glisse et se pose avec la cascade,
+     l'ancienne est doucement poussée dans le même sens (profondeur) */
+  if (mediaIn) tl.to(mediaIn, { yPercent: 0, scale: 1, duration: 1.1, ease: "power3.out" }, 0.25);
+  if (mediaOut) tl.to(mediaOut, { yPercent: 3 * dir, scale: 1.08, duration: 0.9, ease: "power2.inOut" }, 0.2);
 }
 
 Observer.create({
