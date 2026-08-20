@@ -1,0 +1,60 @@
+{
+  "projects": [
+    {
+      "title": "2GZR",
+      "category": "BRANDING · APP",
+      "year": "2026",
+      "color": "#E7599F",
+      "darkText": false,
+      "role": "DA · Identité · UX/UI",
+      "client": "Projet étudiant — Brassart",
+      "deliverables": "Logo, campagne, app, merch",
+      "description": "Application & communauté « Ride » : identité 360°, campagne et application pour trouver des spots et des riders près de chez soi (+ outils de suivi de session).",
+      "image": "images/uploads/2gzr-hero.jpg",
+      "video": "",
+      "gallery": [
+        "images/uploads/2gzr-bagues.jpg",
+        "images/uploads/2gzr-tshirt.jpg",
+        "images/uploads/2gzr-skate.jpg",
+        "images/uploads/2gzr-appstore.jpg",
+        "images/uploads/2gzr-ascii.mp4"
+      ],
+      "galleryLayout": ["half", "half", "full", "full", "full"]
+    },
+    {
+      "title": "YOKAI",
+      "category": "ÉDITION · INFOGRAPHIE",
+      "year": "2025",
+      "color": "#D64533",
+      "darkText": false,
+      "role": "DA · Illustration · Édition",
+      "client": "Projet étudiant — Brassart",
+      "deliverables": "Recueil, couverture, stickers",
+      "description": "Recueil premium sur les yōkai : illustrations façon gravure, système typographique bilingue et mise en page éditoriale — découverte et classification des esprits japonais.",
+      "image": "images/uploads/yokai-hero.jpg",
+      "video": "",
+      "gallery": [
+        "images/uploads/yokai-logo.mp4",
+        "images/uploads/yokai-couverture.jpg",
+        "images/uploads/yokai-sticker.jpg",
+        "images/uploads/yokai-spread.jpg",
+        "images/uploads/yokai-pile.jpg"
+      ],
+      "galleryLayout": ["full", "half", "half", "full", "full"]
+    },
+    {
+      "title": "Monopoly × Arcane",
+      "category": "PACKAGING · ÉDITION SPÉCIALE",
+      "year": "2024",
+      "color": "#16233F",
+      "darkText": false,
+      "role": "DA · Packaging · 3D",
+      "client": "Projet étudiant — Brassart",
+      "deliverables": "Plateau, billets, packaging, pions 3D",
+      "description": "Édition collector du Monopoly dans l'univers d'Arcane : plateau Piltover / Zaun, sept billets personnages et pions imprimés en 3D.",
+      "image": "",
+      "video": "",
+      "gallery": []
+    }
+  ]
+}

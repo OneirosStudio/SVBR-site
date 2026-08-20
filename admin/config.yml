@@ -1,0 +1,46 @@
+# ═══════════════════════════════════════════
+# SVBR® — Configuration du CMS (Decap CMS)
+# Édite les projets du portfolio sans coder.
+# ═══════════════════════════════════════════
+
+backend:
+  name: git-gateway        # passe par Netlify Identity + Git Gateway
+  branch: main             # la branche déployée
+
+# où sont stockées les images/vidéos uploadées
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+locale: fr
+site_url: /
+
+collections:
+  - name: "contenu"
+    label: "Contenu du site"
+    files:
+      - name: "projects"
+        label: "🎨 Projets du portfolio"
+        file: "data/projects.json"
+        description: "Ajouter, modifier, réordonner les projets. Glisser-déposer pour changer l'ordre."
+        fields:
+          - label: "Projets"
+            name: "projects"
+            widget: "list"
+            summary: "{{fields.title}} — {{fields.year}}"
+            fields:
+              - { label: "Titre", name: "title", widget: "string" }
+              - { label: "Catégorie (ex : IDENTITÉ VISUELLE & MOTION)", name: "category", widget: "string" }
+              - { label: "Année", name: "year", widget: "string" }
+              - { label: "Couleur de fond (si pas d'image)", name: "color", widget: "color", default: "#3344F0" }
+              - { label: "Texte sombre ? (pour fonds clairs type lime)", name: "darkText", widget: "boolean", default: false, required: false }
+              - { label: "Rôle", name: "role", widget: "string", required: false }
+              - { label: "Client", name: "client", widget: "string", required: false }
+              - { label: "Livrables", name: "deliverables", widget: "string", required: false }
+              - { label: "Description courte", name: "description", widget: "text", required: false }
+              - { label: "Image de couverture (jpg/png/webp — 1920px conseillé)", name: "image", widget: "image", required: false, allow_multiple: false }
+              - { label: "Vidéo de fond (mp4 court, muet, < 10 Mo conseillé)", name: "video", widget: "file", required: false }
+              - label: "Galerie — les visuels de l'étude de cas (défilement de la page projet)"
+                name: "gallery"
+                widget: "list"
+                required: false
+                field: { label: "Image ou vidéo (mp4)", name: "media", widget: "image" }

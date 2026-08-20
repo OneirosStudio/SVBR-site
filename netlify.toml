@@ -1,0 +1,19 @@
+# SVBR® — Config Netlify
+# Site statique : aucun build nécessaire, on publie tel quel.
+
+[build]
+  publish = "."
+
+# Sécurité de base
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache long pour les assets uploadés
+[[headers]]
+  for = "/images/uploads/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

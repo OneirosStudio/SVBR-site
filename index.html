@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arthur Ho-Wan — SVBR® · Portfolio 2026</title>
+  <meta name="description" content="Directeur artistique, motion & UX·UI designer — Paris. Identités, habillages animés et interfaces." />
+
+  <!-- Partage social (Open Graph) -->
+  <meta property="og:title" content="Arthur Ho-Wan — SVBR® · Portfolio" />
+  <meta property="og:description" content="Directeur artistique, motion & UX·UI designer — Paris." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/images/uploads/2gzr-hero.jpg" />
+  <meta name="theme-color" content="#0E0D0B" />
+
+  <!-- Favicon (monogramme AH cobalt) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233344F0'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='26' font-weight='700' fill='white' text-anchor='middle'%3EAH%3C/text%3E%3C/svg%3E" />
+
+  <!-- Netlify Identity (connexion au CMS /admin) -->
+  <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600&family=Inter:wght@400;500&family=Instrument+Serif:ital@1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-view="featured">
+
+  <!-- ══════════ PRELOADER ══════════ -->
+  <div class="preloader" id="preloader">
+    <div class="preloader__grid" aria-hidden="true"></div>
+    <div class="preloader__center">
+      <span class="preloader__brand mono">SVBR®</span>
+      <span class="preloader__scramble mono" id="preScramble">CHARGEMENT</span>
+    </div>
+    <span class="preloader__count mono" id="preCount">000</span>
+    <span class="preloader__coord mono">48.85°N — 2.35°E</span>
+  </div>
+
+  <!-- ══════════ CUSTOM CURSOR ══════════ -->
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <div class="cursor__box"></div>
+    <span class="cursor__label mono" id="cursorLabel"></span>
+  </div>
+
+  <!-- ══════════ GRID + REG MARKS (global chrome) ══════════ -->
+  <div class="chrome" aria-hidden="true">
+    <div class="chrome__cols" id="chromeCols"></div>
+    <span class="reg reg--tl"></span><span class="reg reg--tr"></span>
+    <span class="reg reg--bl"></span><span class="reg reg--br"></span>
+  </div>
+
+  <!-- ══════════ HEADER ══════════ -->
+  <header class="header" id="header">
+    <div class="header__left">
+      <a href="#featured" class="header__brand mono" data-view-link="featured" data-scramble>SVBR® — ARTHUR HO-WAN</a>
+      <span class="header__meta mono"><span id="viewTag">FEATURED</span> / 48.85°N 2.35°E</span>
+    </div>
+    <div class="header__right">
+      <span class="header__clock mono"><span class="live-dot"></span><span id="clock">00:00:00</span> PARIS</span>
+      <nav class="header__nav mono">
+        <a href="#featured" data-view-link="featured" data-scramble class="is-active">FEATURED</a>
+        <span class="sep">·</span>
+        <a href="#index" data-view-link="index" data-scramble>INDEX</a>
+        <span class="sep">·</span>
+        <a href="#contact" data-view-link="contact" data-scramble>CONTACT</a>
+      </nav>
+      <button class="burger mono" id="burger" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- ══════════ VIEW · FEATURED (hero carousel) ══════════ -->
+  <main class="view view--featured is-active" id="view-featured">
+    <div class="hero__bg" id="heroBg"></div>
+    <div class="hero__bg hero__bg--next" id="heroBgNext"></div>
+
+    <div class="hero__center">
+      <button class="play" id="heroPlay" data-cursor="PLAY" aria-label="Lire la vidéo">
+        <span class="play__ring"></span>
+        <svg viewBox="0 0 24 24" class="play__tri"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg>
+      </button>
+      <p class="hero__note mono">◼ VISUEL PLEIN CADRE — IMAGE / VIDÉO</p>
+    </div>
+
+    <div class="hero__legend mono">⇦ ⇨ NAVIGUER &nbsp;·&nbsp; SCROLL &nbsp;·&nbsp; GLISSER &nbsp;·&nbsp; CLIC = OUVRIR</div>
+
+    <div class="hero__bottom">
+      <div class="hero__project" id="heroProject" data-cursor="OUVRIR">
+        <span class="hero__num mono" id="heroNum">(01)</span>
+        <h1 class="hero__title" id="heroTitle">Neøn Festival</h1>
+        <p class="hero__cat mono" id="heroCat">IDENTITÉ VISUELLE &amp; MOTION — 2025</p>
+      </div>
+      <div class="hero__nav">
+        <span class="hero__count mono"><span id="heroIdx">01</span> / <span id="heroTotal">06</span></span>
+        <div class="hero__arrows mono">
+          <button class="hero__arrow" id="prevBtn" data-scramble>[←] PRÉC.</button>
+          <button class="hero__arrow" id="nextBtn" data-scramble>SUIV. [→]</button>
+        </div>
+        <span class="hero__next-name mono" id="nextName">SUIVANT — Orbit OS</span>
+      </div>
+    </div>
+
+    <div class="hero__progress" id="heroProgress"></div>
+  </main>
+
+  <!-- ══════════ VIEW · INDEX ══════════ -->
+  <section class="view view--index" id="view-index">
+    <div class="index__head">
+      <span class="mono index__label">INDEX — <span id="indexCount">06</span> PROJETS</span>
+      <button class="mono view-close" data-view-link="featured" data-scramble>FERMER ✕</button>
+    </div>
+    <div class="index__grid" id="indexGrid"></div>
+    <p class="index__foot mono">VUE D'ENSEMBLE — CLIC POUR OUVRIR UN PROJET</p>
+  </section>
+
+  <!-- ══════════ VIEW · PROJECT (étude de cas, scrollable) ══════════ -->
+  <section class="view view--project" id="view-project">
+    <div class="project__scroll" id="projectScroll">
+
+      <!-- HERO plein écran -->
+      <div class="phero">
+        <div class="project__bg" id="projectBg"></div>
+        <div class="phero__top mono">
+          <button class="project__back" data-view-link="index" data-scramble>[←] INDEX</button>
+          <span id="projectCounter">PROJET N°01 / 06</span>
+          <span class="phero__coord">48.85°N 2.35°E</span>
+        </div>
+        <div class="hero__center">
+          <button class="play" data-cursor="PLAY" aria-label="Lire la vidéo">
+            <span class="play__ring"></span>
+            <svg viewBox="0 0 24 24" class="play__tri"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg>
+          </button>
+          <p class="hero__note mono">◼ VISUEL PLEIN CADRE — remplacer</p>
+        </div>
+        <div class="phero__bottom">
+          <div>
+            <span class="mono" id="pbNum">(01)</span>
+            <h2 class="phero__title" id="pcTitle">Neøn Festival</h2>
+            <p class="mono phero__cat" id="pcCat">IDENTITÉ VISUELLE &amp; MOTION — 2025</p>
+          </div>
+          <span class="mono phero__cue">↓ DÉFILER</span>
+        </div>
+      </div>
+
+      <!-- INFOS (façon champs Agency/Industry/Category) -->
+      <div class="pinfo">
+        <p class="pinfo__lead" id="pcDesc">Système d'identité génératif pensé pour le mouvement, du print au réseau.</p>
+        <dl class="pinfo__meta mono">
+          <div><dt>RÔLE</dt><dd id="pcRole">DA · Identité · Motion</dd></div>
+          <div><dt>ANNÉE</dt><dd id="pcYear">2025</dd></div>
+          <div><dt>CLIENT</dt><dd id="pcClient">Neøn Festival</dd></div>
+          <div><dt>LIVRABLES</dt><dd id="pcDeliv">Logo, Charte, Habillage</dd></div>
+        </dl>
+      </div>
+
+      <!-- GALERIE (pleine largeur / 2-up alternés) -->
+      <div class="pgallery" id="pGallery"></div>
+
+      <!-- NAVIGATION PROJET -->
+      <div class="pfoot">
+        <div class="pfoot__bar mono">
+          <button id="pPrev" data-scramble>[←] PROJET PRÉCÉDENT</button>
+          <button id="backTop" data-scramble>RETOUR EN HAUT [↑]</button>
+        </div>
+        <a class="pnext" id="pNextFooter" data-cursor="SUIVANT">
+          <span class="mono pnext__label">PROJET SUIVANT</span>
+          <span class="pnext__title" id="pNextTitle">Orbit OS</span>
+          <span class="mono pnext__cat" id="pNextCat">PRODUIT · UI/UX — 2025 &nbsp;→</span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════ VIEW · ABOUT ══════════ -->
+  <section class="view view--about" id="view-about">
+    <div class="about__top mono">
+      <span>ABOUT / STUDIO — 48.85°N 2.35°E</span>
+      <span>◼ PORTRAIT — remplacer par une photo</span>
+    </div>
+    <h2 class="about__stmt" id="aboutStmt">Un studio d'une personne, <em>entre le studio et la rue.</em></h2>
+    <aside class="pcard pcard--about">
+      <span class="pcard__cat mono">BIO</span>
+      <p class="pcard__desc">Directeur artistique, motion &amp; UX·UI designer. J'accompagne marques et startups — identités, habillages animés et interfaces. Concept fort, exécution rigoureuse.</p>
+      <dl class="pcard__meta mono">
+        <div><dt>BASÉ À</dt><dd>Paris, France</dd></div>
+        <div><dt>EXPÉRIENCE</dt><dd>5+ années</dd></div>
+        <div><dt>SERVICES</dt><dd>DA · Motion · UI/UX</dd></div>
+        <div><dt>LANGUES</dt><dd>FR / EN</dd></div>
+      </dl>
+      <a class="pcard__cta mono magnetic" href="#contact" data-view-link="contact" data-scramble>ME CONTACTER →</a>
+    </aside>
+    <div class="marquee" aria-hidden="true"><div class="marquee__track mono" id="aboutMarquee">
+      DIRECTION ARTISTIQUE — MOTION DESIGN — UI/UX — BRANDING — 3D &amp; CGI —&nbsp;</div>
+    </div>
+  </section>
+
+  <!-- ══════════ VIEW · CONTACT ══════════ -->
+  <section class="view view--contact" id="view-contact">
+    <div class="contact__left">
+      <span class="mono contact__label">CONTACT / 48.85°N 2.35°E</span>
+      <h2 class="contact__title" id="contactTitle">Travaillons <em>ensemble.</em></h2>
+      <a class="contact__mail" href="mailto:hello@arthurhowan.com" data-cursor="ÉCRIRE" data-scramble-hover>hello@arthurhowan.com</a>
+      <div class="contact__socials mono">
+        <a href="#" data-scramble>LINKEDIN ↗</a>
+        <a href="#" data-scramble>INSTAGRAM ↗</a>
+        <a href="#" data-scramble>BEHANCE ↗</a>
+      </div>
+      <span class="mono contact__dispo"><span class="live-dot live-dot--lime"></span>DISPONIBLE POUR DE NOUVEAUX PROJETS — 2026</span>
+      <span class="mono contact__legal"><a href="/mentions-legales.html" data-scramble>MENTIONS LÉGALES</a> &nbsp;·&nbsp; <a href="/confidentialite.html" data-scramble>CONFIDENTIALITÉ</a></span>
+    </div>
+    <form class="cform" id="cform" autocomplete="off">
+      <span class="mono cform__label">ÉCRIRE UN MESSAGE</span>
+      <label class="cfield"><span class="mono">NOM</span><input type="text" placeholder="Votre nom" required /></label>
+      <label class="cfield"><span class="mono">EMAIL</span><input type="email" placeholder="vous@email.com" required /></label>
+      <label class="cfield"><span class="mono">MESSAGE</span><textarea rows="3" placeholder="Décrivez votre projet…" required></textarea></label>
+      <button type="submit" class="cform__send mono magnetic" data-cursor="GO">ENVOYER →</button>
+    </form>
+  </section>
+
+  <!-- ══════════ MENU OVERLAY ══════════ -->
+  <div class="menu" id="menu" aria-hidden="true">
+    <div class="menu__top mono">
+      <span>SVBR® — ARTHUR HO-WAN</span>
+      <button class="menu__close mono" id="menuClose" data-scramble>FERMER ✕</button>
+    </div>
+    <nav class="menu__nav">
+      <a href="#featured" data-view-link="featured" class="menu__item" data-cursor="ALLER">
+        <span class="mono menu__idx">01</span><span class="menu__word">Featured</span><span class="mono menu__desc">Accueil / projet en cours</span>
+      </a>
+      <a href="#index" data-view-link="index" class="menu__item" data-cursor="ALLER">
+        <span class="mono menu__idx">02</span><span class="menu__word">Index</span><span class="mono menu__desc">Tous les projets</span>
+      </a>
+      <a href="#about" data-view-link="about" class="menu__item" data-cursor="ALLER">
+        <span class="mono menu__idx">03</span><span class="menu__word">About</span><span class="mono menu__desc">Studio &amp; parcours</span>
+      </a>
+      <a href="#contact" data-view-link="contact" class="menu__item" data-cursor="ALLER">
+        <span class="mono menu__idx">04</span><span class="menu__word">Contact</span><span class="mono menu__desc">Travaillons ensemble</span>
+      </a>
+    </nav>
+    <div class="menu__info mono">
+      <div><span class="menu__info-title">PROJETS / 06</span><ul id="menuProjects"></ul></div>
+      <div><span class="menu__info-title">CONTACT</span><p>hello@arthurhowan.com<br/>+33 6 12 34 56 78</p></div>
+      <div><span class="menu__info-title">SUIVRE</span><p><a href="#" data-scramble>LINKEDIN ↗</a> <a href="#" data-scramble>INSTAGRAM ↗</a> <a href="#" data-scramble>BEHANCE ↗</a></p></div>
+    </div>
+    <div class="menu__foot mono">
+      <span><span class="live-dot live-dot--lime"></span>DISPONIBLE POUR 2026</span>
+      <span class="menu__legal"><a href="/mentions-legales.html">MENTIONS LÉGALES</a> · <a href="/confidentialite.html">CONFIDENTIALITÉ</a></span>
+      <span>© SVBR 2026 — PARIS</span>
+    </div>
+  </div>
+
+  <!-- ══════════ VIEW TRANSITION CURTAIN ══════════ -->
+  <div class="curtain" id="curtain" aria-hidden="true">
+    <span class="curtain__label mono" id="curtainLabel">FEATURED</span>
+  </div>
+
+  <!-- GSAP 3.13 (tous plugins libres) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Observer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="js/main.js"></script>
+
+  <!-- Redirection après invitation / login Netlify Identity -->
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", (user) => {
+        if (!user) window.netlifyIdentity.on("login", () => { document.location.href = "/admin/"; });
+      });
+    }
+  </script>
+</body>
+</html>

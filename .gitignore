@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Outils locaux
+.claude/
+
+# Fichier de travail hors site
+Illustration_sans_titre.png
+
+# Sources d'images originales (très lourdes, jusqu'à 100 Mo) —
+# seules les versions optimisées dans images/uploads/ sont publiées.
+images/2GZR/
+images/Yokai/
+images/INDA/
+images/Monopoly x Arcane/
+images/À la bonne croquette/
