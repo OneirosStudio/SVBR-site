@@ -34,6 +34,7 @@ async function loadProjects() {
         color: p.color || "#3344F0", dark: !!p.darkText,
         role: p.role || "", client: p.client || "", deliv: p.deliverables || "",
         desc: p.description || "", image: p.image || "", video: p.video || "",
+        figma: p.figmaUrl || "",
         gallery: Array.isArray(p.gallery) ? p.gallery.filter(Boolean) : [],
         layout: Array.isArray(p.galleryLayout) ? p.galleryLayout : null,
       }));
@@ -361,7 +362,7 @@ function galleryReveals() {
     }
   });
   // infos + footer suivant
-  const lead = gsap.fromTo(".pinfo__lead", { y: 34, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, ease: "power3.out",
+  const lead = gsap.fromTo([".pinfo__lead", ".pinfo__figma"], { y: 34, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, stagger: 0.1, ease: "power3.out",
     scrollTrigger: { trigger: ".pinfo", scroller, start: "top 82%" } });
   const meta = gsap.fromTo(".pinfo__meta div", { y: 18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.6, stagger: 0.08, ease: "power3.out",
     scrollTrigger: { trigger: ".pinfo", scroller, start: "top 78%" } });
@@ -379,6 +380,10 @@ function populateProject(i) {
   $("#pcTitle").textContent = p.title;
   $("#pcCat").textContent = p.cat;
   $("#pcDesc").textContent = p.desc;
+  // lien Figma du projet : visible seulement si une URL est renseignée
+  const fig = $("#pcFigma");
+  if (p.figma) { fig.href = p.figma; fig.style.display = ""; }
+  else { fig.style.display = "none"; }
   $("#pcRole").textContent = p.role;
   $("#pcYear").textContent = p.year;
   $("#pcClient").textContent = p.client;

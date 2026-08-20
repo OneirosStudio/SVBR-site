@@ -37,6 +37,7 @@ collections:
               - { label: "Client", name: "client", widget: "string", required: false }
               - { label: "Livrables", name: "deliverables", widget: "string", required: false }
               - { label: "Description courte", name: "description", widget: "text", required: false }
+              - { label: "Lien Figma (bouton « Accéder aux fichiers Figma » — vide = masqué)", name: "figmaUrl", widget: "string", required: false }
               - { label: "Image de couverture (jpg/png/webp — 1920px conseillé)", name: "image", widget: "image", required: false, allow_multiple: false }
               - { label: "Vidéo de fond (mp4 court, muet, < 10 Mo conseillé)", name: "video", widget: "file", required: false }
               - label: "Galerie — les visuels de l'étude de cas (défilement de la page projet)"

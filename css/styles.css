@@ -225,6 +225,14 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; }
 }
 .pinfo__meta dt { font-weight: 400; font-size: 11px; opacity: 0.6; }
 .pinfo__meta dd { font-family: var(--f-display); font-weight: 500; font-size: 15px; }
+/* lien "fichiers Figma" sous la description (masqué si le projet n'a pas de lien) */
+.pinfo__figma {
+  display: inline-block; margin-top: 28px;
+  font-size: 12px; letter-spacing: 0.08em; color: inherit;
+  text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px;
+  transition: opacity 0.3s;
+}
+.pinfo__figma:hover { opacity: 0.6; }
 
 /* galerie : pleine largeur / 2-up alternés */
 .pgallery {
