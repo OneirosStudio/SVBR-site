@@ -18,9 +18,9 @@ Site statique (HTML / CSS / JS + GSAP), aucun build nécessaire.
 |---|---|
 | 2GZR | ✅ en ligne |
 | YOKAI | ✅ en ligne |
-| Monopoly × Arcane | 🚧 à venir |
-| À la bonne croquette | 🚧 à venir |
-| INDA | 🚧 à venir |
+| INDA | ✅ en ligne |
+| À la bonne croquette | ✅ en ligne (visuels en cours de finalisation) |
+| Monopoly × Arcane | ✅ en ligne (visuels en cours de finalisation) |
 
 ## Déploiement
 

@@ -10,7 +10,7 @@
       "client": "Projet étudiant — Brassart",
       "deliverables": "Logo, campagne, app, merch",
       "description": "Application & communauté « Ride » : identité 360°, campagne et application pour trouver des spots et des riders près de chez soi (+ outils de suivi de session).",
-      "figmaUrl": "https://www.figma.com/design/QZQSa145O1xl6OOAjHBjBN/SVBR?node-id=148-2",
+      "figmaUrl": "https://www.figma.com/design/kheF60xUzBqGb2WOUTomng/2GZR_MVP?node-id=1624-5&t=NWO1F6Z0E4No41la-1",
       "image": "images/uploads/2gzr-hero.jpg",
       "video": "",
       "gallery": [
@@ -32,7 +32,7 @@
       "client": "Projet étudiant — Brassart",
       "deliverables": "Recueil, couverture, stickers",
       "description": "Recueil premium sur les yōkai : illustrations façon gravure, système typographique bilingue et mise en page éditoriale — découverte et classification des esprits japonais.",
-      "figmaUrl": "https://www.figma.com/design/QZQSa145O1xl6OOAjHBjBN/SVBR?node-id=148-3",
+      "figmaUrl": "",
       "image": "images/uploads/yokai-hero.jpg",
       "video": "",
       "gallery": [
@@ -45,6 +45,46 @@
       "galleryLayout": ["full", "half", "half", "full", "full"]
     },
     {
+      "title": "INDA",
+      "category": "IDENTITÉ · DIGITAL",
+      "year": "2026",
+      "color": "#7B52F5",
+      "darkText": false,
+      "role": "DA · Identité · Webdesign",
+      "client": "Institut National des Danses Actuelles",
+      "deliverables": "Logo, charte, site web",
+      "description": "Identité de l'Institut National des Danses Actuelles : logotype signal, palette Signal Black / Creamy Milk / Amethyst, système typographique Bowliner + Alpino et déclinaison web.",
+      "figmaUrl": "https://www.figma.com/design/IJ9YTId7YfsiyCwz0kCmMC/Arthur_Inda--Copy-?node-id=251-866&t=AQLcTI8t6ExeUCA8-1",
+      "image": "images/uploads/inda-hero.jpg",
+      "video": "",
+      "gallery": [
+        "images/uploads/inda-demo.mp4",
+        "images/uploads/inda-branding.jpg"
+      ],
+      "galleryLayout": ["full", "full"]
+    },
+    {
+      "title": "À la bonne croquette",
+      "category": "BRANDING · PACKAGING",
+      "year": "2025",
+      "color": "#E76F28",
+      "darkText": false,
+      "role": "DA · Identité · Packaging",
+      "client": "Projet étudiant — Brassart",
+      "deliverables": "Logo, packaging, campagne",
+      "description": "Marque de croquettes fraîches et gourmandes : identité chaleureuse, packaging orange signature et campagne autour du quotidien des chiens (visuels en cours de finalisation).",
+      "figmaUrl": "https://www.figma.com/design/4Nj8ZcX5p8wxHoQTMDCNoX/Retail?node-id=0-1&t=StRHzfwMESGWy1g1-1",
+      "image": "images/uploads/croquette-hero.jpg",
+      "video": "",
+      "gallery": [
+        "images/uploads/croquette-boite.jpg",
+        "images/uploads/croquette-ingredients.jpg",
+        "images/uploads/croquette-packaging.jpg",
+        "images/uploads/croquette-balle.jpg"
+      ],
+      "galleryLayout": ["full", "half", "half", "full"]
+    },
+    {
       "title": "Monopoly × Arcane",
       "category": "PACKAGING · ÉDITION SPÉCIALE",
       "year": "2024",
@@ -53,8 +93,9 @@
       "role": "DA · Packaging · 3D",
       "client": "Projet étudiant — Brassart",
       "deliverables": "Plateau, billets, packaging, pions 3D",
-      "description": "Édition collector du Monopoly dans l'univers d'Arcane : plateau Piltover / Zaun, sept billets personnages et pions imprimés en 3D.",
-      "image": "",
+      "description": "Édition collector du Monopoly dans l'univers d'Arcane : plateau Piltover / Zaun, sept billets personnages et pions imprimés en 3D (visuels en cours de finalisation).",
+      "figmaUrl": "",
+      "image": "images/uploads/monopoly-hero.jpg",
       "video": "",
       "gallery": []
     }
