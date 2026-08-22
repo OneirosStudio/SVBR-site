@@ -31,6 +31,7 @@ collections:
               - { label: "Titre", name: "title", widget: "string" }
               - { label: "Catégorie (ex : IDENTITÉ VISUELLE & MOTION)", name: "category", widget: "string" }
               - { label: "Année", name: "year", widget: "string" }
+              - { label: "Statut (ex : IN MAKING — laisser vide sinon)", name: "status", widget: "string", required: false }
               - { label: "Couleur de fond (si pas d'image)", name: "color", widget: "color", default: "#3344F0" }
               - { label: "Texte sombre ? (pour fonds clairs type lime)", name: "darkText", widget: "boolean", default: false, required: false }
               - { label: "Rôle", name: "role", widget: "string", required: false }

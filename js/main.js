@@ -30,7 +30,8 @@ async function loadProjects() {
     if (j.projects?.length) {
       PROJECTS = j.projects.map((p) => ({
         title: p.title, year: p.year || "",
-        cat: p.year ? `${p.category} — ${p.year}` : p.category,
+        status: p.status || "",
+        cat: (p.year ? `${p.category} — ${p.year}` : p.category) + (p.status ? ` · ${p.status}` : ""),
         color: p.color || "#3344F0", dark: !!p.darkText,
         role: p.role || "", client: p.client || "", deliv: p.deliverables || "",
         desc: p.description || "", image: p.image || "", video: p.video || "",
@@ -342,7 +343,9 @@ function buildGallery(p) {
       }
       const cap = document.createElement("span");
       cap.className = "pg-item__cap mono";
-      cap.textContent = src ? `${p.title} — ${String(k + 1).padStart(2, "0")}` : `◼ IMAGE ${String(k + 1).padStart(2, "0")} — à remplacer (CMS)`;
+      cap.textContent = src ? `${p.title} — ${String(k + 1).padStart(2, "0")}`
+        : p.status ? `◼ STATUS : ${p.status}`
+        : `◼ IMAGE ${String(k + 1).padStart(2, "0")} — à remplacer (CMS)`;
       it.appendChild(cap);
       row.appendChild(it);
       k++;
