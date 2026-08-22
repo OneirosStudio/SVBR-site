@@ -414,3 +414,7 @@ body[data-view="index"] .live-dot { background: var(--brand); }
 @media (prefers-reduced-motion: reduce) {
   .live-dot { animation: none; }
 }
+
+/* ── Visuels portrait en pleine largeur : pas de recadrage sauvage ── */
+.pg-item--contain { background: #141311; }
+.pg-item--contain .bg-media { object-fit: contain; }

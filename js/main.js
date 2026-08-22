@@ -40,8 +40,11 @@ async function loadProjects() {
       }));
     }
   } catch (e) { /* fallback = défauts */ }
-  // précharge les images
-  PROJECTS.forEach((p) => { if (p.image) { const i = new Image(); i.src = p.image; } });
+  // précharge : le hero du projet affiché d'abord, les autres en différé
+  // (tout précharger d'un coup ralentissait le premier affichage)
+  const preload = (i) => { const p = PROJECTS[i]; if (p?.image) { const im = new Image(); im.src = p.image; } };
+  preload(0);
+  setTimeout(() => { for (let k = 1; k < PROJECTS.length; k++) preload(k); }, 1500);
 }
 
 /* ── MEDIA : peint un fond (couleur + image/vidéo) ─ */
@@ -327,7 +330,13 @@ function buildGallery(p) {
           v.className = "bg-media"; it.appendChild(v);
         } else {
           const im = document.createElement("img");
-          im.src = src; im.alt = p.title; im.loading = "lazy"; im.className = "bg-media";
+          im.src = src; im.alt = p.title; im.loading = "lazy"; im.decoding = "async"; im.className = "bg-media";
+          // visuel portrait dans une rangée pleine largeur → affichage entier
+          // (object-fit: contain) au lieu d'un recadrage brutal
+          if (isFull) {
+            const markPortrait = () => { if (im.naturalHeight > im.naturalWidth * 1.05) it.classList.add("pg-item--contain"); };
+            im.complete && im.naturalWidth ? markPortrait() : im.addEventListener("load", markPortrait, { once: true });
+          }
           it.appendChild(im);
         }
       }
