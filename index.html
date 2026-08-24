@@ -217,11 +217,13 @@
       <span class="mono contact__dispo"><span class="live-dot live-dot--lime"></span>DISPONIBLE POUR DE NOUVEAUX PROJETS — 2026</span>
       <span class="mono contact__legal"><a href="mentions-legales.html" data-scramble>MENTIONS LÉGALES</a> &nbsp;·&nbsp; <a href="confidentialite.html" data-scramble>CONFIDENTIALITÉ</a></span>
     </div>
-    <form class="cform" id="cform" autocomplete="off">
+    <form class="cform" id="cform" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" autocomplete="off">
+      <input type="hidden" name="form-name" value="contact" />
+      <p hidden><label>Ne pas remplir : <input name="bot-field" /></label></p>
       <span class="mono cform__label">ÉCRIRE UN MESSAGE</span>
-      <label class="cfield"><span class="mono">NOM</span><input type="text" placeholder="Votre nom" required /></label>
-      <label class="cfield"><span class="mono">EMAIL</span><input type="email" placeholder="vous@email.com" required /></label>
-      <label class="cfield"><span class="mono">MESSAGE</span><textarea rows="3" placeholder="Décrivez votre projet…" required></textarea></label>
+      <label class="cfield"><span class="mono">NOM</span><input type="text" name="nom" placeholder="Votre nom" required /></label>
+      <label class="cfield"><span class="mono">EMAIL</span><input type="email" name="email" placeholder="vous@email.com" required /></label>
+      <label class="cfield"><span class="mono">MESSAGE</span><textarea rows="3" name="message" placeholder="Décrivez votre projet…" required></textarea></label>
       <button type="submit" class="cform__send mono magnetic" data-cursor="GO">ENVOYER →</button>
     </form>
   </section>

@@ -145,6 +145,8 @@ function applyProject(i, skipTitle = false, skipBg = false) {
   // en plein balayage (l'ancienne image disparaîtrait d'un coup — "saut")
   if (!skipBg) paintBg($("#heroBg"), p);
   $(".hero__note").style.opacity = hasMedia(p) ? 0 : 0.75;
+  // bouton play : uniquement si le projet a une vidéo de fond
+  $("#heroPlay").style.display = p.video ? "" : "none";
   const fg = p.dark ? "#0E0D0B" : "#FFFFFF";
   gsap.set("#view-featured", { color: fg });
   $$(".hero__progress i b").forEach((b, k) => gsap.to(b, { scaleX: k === i ? 1 : 0, duration: 0.6, ease: "power2.out" }));
@@ -401,6 +403,8 @@ function populateProject(i) {
   $("#pcClient").textContent = p.client;
   $("#pcDeliv").textContent = p.deliv;
   $$("#view-project .hero__note").forEach((n) => (n.style.opacity = hasMedia(p) ? 0 : 0.75));
+  // bouton play du hero projet : uniquement si vidéo
+  $$("#view-project .play").forEach((b) => (b.style.display = p.video ? "" : "none"));
   gsap.set(".phero", { color: p.dark ? "#0E0D0B" : "#FFFFFF" });
   // footer "projet suivant" (couleur du prochain projet)
   const np = PROJECTS[(i + 1) % PROJECTS.length];
@@ -503,10 +507,22 @@ window.addEventListener("keydown", (e) => e.key === "Escape" && closeMenu());
 })();
 
 /* ── FORM ──────────────────────────────────── */
-$("#cform").addEventListener("submit", (e) => {
+$("#cform").addEventListener("submit", async (e) => {
   e.preventDefault();
+  const form = e.target;
   const btn = $(".cform__send");
-  scramble(btn, "ENVOYÉ ✓", 0.5);
+  try {
+    // envoi réel via Netlify Forms (les messages arrivent dans Netlify → Forms)
+    await fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(new FormData(form)).toString(),
+    });
+    scramble(btn, "ENVOYÉ ✓", 0.5);
+    form.reset();
+  } catch {
+    scramble(btn, "ERREUR — RÉESSAYER", 0.5);
+  }
   gsap.fromTo(btn, { scale: 0.96 }, { scale: 1, duration: 0.5, ease: "back.out(2)" });
 });
 

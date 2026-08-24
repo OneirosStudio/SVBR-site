@@ -20,7 +20,13 @@
         "images/uploads/2gzr-appstore.jpg",
         "images/uploads/2gzr-ascii.mp4"
       ],
-      "galleryLayout": ["half", "half", "full", "full", "full"]
+      "galleryLayout": [
+        "half",
+        "half",
+        "full",
+        "full",
+        "full"
+      ]
     },
     {
       "title": "YOKAI",
@@ -42,7 +48,13 @@
         "images/uploads/yokai-spread.jpg",
         "images/uploads/yokai-pile.jpg"
       ],
-      "galleryLayout": ["full", "half", "half", "full", "full"]
+      "galleryLayout": [
+        "full",
+        "half",
+        "half",
+        "full",
+        "full"
+      ]
     },
     {
       "title": "INDA",
@@ -61,44 +73,10 @@
         "images/uploads/inda-demo.mp4",
         "images/uploads/inda-branding.jpg"
       ],
-      "galleryLayout": ["full", "full"]
-    },
-    {
-      "title": "À la bonne croquette",
-      "category": "BRANDING · PACKAGING",
-      "year": "2025",
-      "color": "#E76F28",
-      "darkText": false,
-      "role": "DA · Identité · Packaging",
-      "client": "Projet étudiant — Brassart",
-      "deliverables": "Logo, packaging, campagne",
-      "description": "Marque de croquettes fraîches et gourmandes : identité chaleureuse, packaging orange signature et campagne autour du quotidien des chiens (visuels en cours de finalisation).",
-      "figmaUrl": "https://www.figma.com/design/4Nj8ZcX5p8wxHoQTMDCNoX/Retail?node-id=0-1&t=StRHzfwMESGWy1g1-1",
-      "image": "images/uploads/croquette-hero.jpg",
-      "video": "",
-      "gallery": [
-        "images/uploads/croquette-boite.jpg",
-        "images/uploads/croquette-ingredients.jpg",
-        "images/uploads/croquette-packaging.jpg",
-        "images/uploads/croquette-balle.jpg"
-      ],
-      "galleryLayout": ["full", "half", "half", "full"]
-    },
-    {
-      "title": "Monopoly × Arcane",
-      "status": "IN MAKING",
-      "category": "PACKAGING · ÉDITION SPÉCIALE",
-      "year": "2024",
-      "color": "#16233F",
-      "darkText": false,
-      "role": "DA · Packaging · 3D",
-      "client": "Projet étudiant — Brassart",
-      "deliverables": "Plateau, billets, packaging, pions 3D",
-      "description": "Édition collector du Monopoly dans l'univers d'Arcane : plateau Piltover / Zaun, sept billets personnages et pions imprimés en 3D (visuels en cours de finalisation).",
-      "figmaUrl": "",
-      "image": "images/uploads/monopoly-hero.jpg",
-      "video": "",
-      "gallery": []
+      "galleryLayout": [
+        "full",
+        "full"
+      ]
     }
   ]
 }
