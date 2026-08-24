@@ -243,13 +243,24 @@ function goTo(i, dir = 1) {
   if (mediaOut) tl.to(mediaOut, { yPercent: -3 * dir, scale: 1.08, duration: 0.9, ease: "power2.inOut" }, 0.2);
 }
 
+/* molette / trackpad : scroll vers le bas = projet suivant */
 Observer.create({
   target: "#view-featured",
-  type: "wheel,touch,pointer",
+  type: "wheel",
   tolerance: 60,
   preventDefault: true,
   onDown: () => activeView === "featured" && goTo(current + 1, 1),
   onUp: () => activeView === "featured" && goTo(current - 1, -1),
+});
+/* tactile / drag : Observer mesure le geste du doigt (inverse de la molette) —
+   doigt qui glisse vers le HAUT = projet suivant (l'animation monte), et inversement */
+Observer.create({
+  target: "#view-featured",
+  type: "touch,pointer",
+  tolerance: 60,
+  preventDefault: true,
+  onUp: () => activeView === "featured" && goTo(current + 1, 1),
+  onDown: () => activeView === "featured" && goTo(current - 1, -1),
   onLeft: () => activeView === "featured" && goTo(current + 1, 1),
   onRight: () => activeView === "featured" && goTo(current - 1, -1),
 });
