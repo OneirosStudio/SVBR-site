@@ -311,16 +311,19 @@ function buildGallery(p) {
   const layout = Array.isArray(p.layout) && p.layout.length === items.length ? p.layout : null;
   let k = 0, rowIdx = 0;
   while (k < items.length) {
-    let isFull, count;
+    // kind : "full" (pleine largeur, hauteur fixe), "half" (2-up),
+    // "auto" (pleine largeur, l'image impose sa hauteur — zéro crop)
+    let kind, count;
     if (layout) {
-      isFull = layout[k] !== "half";
-      count = isFull ? 1 : (layout[k + 1] === "half" ? 2 : 1);
+      kind = layout[k] === "half" ? "half" : layout[k] === "auto" ? "auto" : "full";
+      count = kind === "half" ? (layout[k + 1] === "half" ? 2 : 1) : 1;
     } else {
-      isFull = rowIdx % 2 === 0; // motif : pleine largeur, puis 2-up, etc.
-      count = isFull ? 1 : Math.min(2, items.length - k);
+      kind = rowIdx % 2 === 0 ? "full" : "half"; // motif : pleine largeur, puis 2-up, etc.
+      count = kind === "full" ? 1 : Math.min(2, items.length - k);
     }
+    const isFull = kind === "full";
     const row = document.createElement("div");
-    row.className = "pg-row " + (isFull ? "pg-row--full" : "pg-row--half");
+    row.className = "pg-row pg-row--" + kind;
     for (let c = 0; c < count; c++) {
       const src = items[k];
       const it = document.createElement("figure");
@@ -367,8 +370,8 @@ function galleryReveals() {
       { clipPath: "inset(0% 0% 0% 0%)", y: 0, autoAlpha: 1, duration: 1, ease: "power3.out",
         scrollTrigger: { trigger: it, scroller, start: "top 88%" } });
     galleryST.push(tw.scrollTrigger);
-    // parallax léger sur le média
-    const media = it.querySelector(".bg-media");
+    // parallax léger sur le média (pas sur les rangées "auto" : l'image est dans le flux)
+    const media = it.closest(".pg-row--auto") ? null : it.querySelector(".bg-media");
     if (media) {
       const par = gsap.fromTo(media, { yPercent: -6 }, { yPercent: 6, ease: "none",
         scrollTrigger: { trigger: it, scroller, scrub: true, start: "top bottom", end: "bottom top" } });

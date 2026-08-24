@@ -70,11 +70,11 @@
       "image": "images/uploads/inda-hero.jpg",
       "video": "",
       "gallery": [
-        "images/uploads/inda-demo.mp4",
-        "images/uploads/inda-branding.jpg"
+        "images/uploads/inda-branding.jpg",
+        "images/uploads/inda-demo.mp4"
       ],
       "galleryLayout": [
-        "full",
+        "auto",
         "full"
       ]
     }

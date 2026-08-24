@@ -418,3 +418,9 @@ body[data-view="index"] .live-dot { background: var(--brand); }
 /* ── Visuels portrait en pleine largeur : pas de recadrage sauvage ── */
 .pg-item--contain { background: #141311; }
 .pg-item--contain .bg-media { object-fit: contain; }
+
+/* ── Rangée "auto" : l'image impose sa hauteur, pleine largeur, zéro crop ── */
+.pg-row--auto { grid-template-columns: 1fr; }
+.pg-row--auto .pg-item { height: auto; padding: 0; display: block; }
+.pg-row--auto .bg-media { position: static; width: 100%; height: auto; object-fit: unset; }
+.pg-row--auto .pg-item__cap { position: absolute; left: 24px; bottom: 22px; }
