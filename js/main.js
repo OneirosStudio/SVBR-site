@@ -190,11 +190,12 @@ function goTo(i, dir = 1) {
   const bgNext = $("#heroBgNext");
   paintBg(bgNext, p);
   /* balayage vertical accompagnant la cascade du titre :
-     dir > 0 → l'image se révèle de haut en bas (l'inverse au retour) */
-  gsap.set(bgNext, { opacity: 1, clipPath: dir > 0 ? "inset(0% 0% 100% 0%)" : "inset(100% 0% 0% 0%)" });
+     dir > 0 (projet suivant) → tout glisse VERS LE HAUT : l'image se révèle
+     de bas en haut ; au retour (dir < 0), l'inverse */
+  gsap.set(bgNext, { opacity: 1, clipPath: dir > 0 ? "inset(100% 0% 0% 0%)" : "inset(0% 0% 100% 0%)" });
   const mediaIn = bgNext.querySelector(".bg-media");
   const mediaOut = $("#heroBg").querySelector(".bg-media");
-  if (mediaIn) gsap.set(mediaIn, { yPercent: -4 * dir, scale: 1.12 });
+  if (mediaIn) gsap.set(mediaIn, { yPercent: 4 * dir, scale: 1.12 });
 
   /* ── crossfade en cascade : l'ancien titre MONTE pendant que le
      nouveau arrive (clone superposé) — aucun échange brutal de texte ── */
@@ -239,7 +240,7 @@ function goTo(i, dir = 1) {
   /* travelling léger : l'image entrante glisse et se pose avec la cascade,
      l'ancienne est doucement poussée dans le même sens (profondeur) */
   if (mediaIn) tl.to(mediaIn, { yPercent: 0, scale: 1, duration: 1.1, ease: "power3.out" }, 0.25);
-  if (mediaOut) tl.to(mediaOut, { yPercent: 3 * dir, scale: 1.08, duration: 0.9, ease: "power2.inOut" }, 0.2);
+  if (mediaOut) tl.to(mediaOut, { yPercent: -3 * dir, scale: 1.08, duration: 0.9, ease: "power2.inOut" }, 0.2);
 }
 
 Observer.create({
