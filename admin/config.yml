@@ -33,7 +33,9 @@ collections:
               - { label: "Année", name: "year", widget: "string" }
               - { label: "Statut (ex : IN MAKING — laisser vide sinon)", name: "status", widget: "string", required: false }
               - { label: "Couleur de fond (si pas d'image)", name: "color", widget: "color", default: "#3344F0" }
+              - { label: "Couleur d'accent (numéros, barres, scène 3D)", name: "accent", widget: "color", default: "#C4E72E", required: false }
               - { label: "Texte sombre ? (pour fonds clairs type lime)", name: "darkText", widget: "boolean", default: false, required: false }
+              - { label: "Accroche (une phrase, en italique sous le titre)", name: "tagline", widget: "string", required: false }
               - { label: "Rôle", name: "role", widget: "string", required: false }
               - { label: "Client", name: "client", widget: "string", required: false }
               - { label: "Livrables", name: "deliverables", widget: "string", required: false }
@@ -46,3 +48,28 @@ collections:
                 widget: "list"
                 required: false
                 field: { label: "Image ou vidéo (mp4)", name: "media", widget: "image" }
+              - label: "Récit — l'étude de cas, bloc par bloc (remplace la galerie si rempli)"
+                name: "story"
+                widget: "list"
+                required: false
+                types:
+                  - label: "Chapitre (titre + texte)"
+                    name: "chapter"
+                    widget: "object"
+                    summary: "{{fields.title}}"
+                    fields:
+                      - { label: "Titre", name: "title", widget: "string" }
+                      - { label: "Texte", name: "text", widget: "text", required: false }
+                  - label: "Visuels (1 ou 2 images / vidéos)"
+                    name: "media"
+                    widget: "object"
+                    fields:
+                      - { label: "Disposition", name: "layout", widget: "select", options: ["full", "half", "auto"], default: "full", hint: "full = pleine largeur · half = 2 côte à côte · auto = hauteur naturelle (visuels très hauts)" }
+                      - { label: "Médias", name: "items", widget: "list", field: { label: "Image ou vidéo (mp4)", name: "media", widget: "image" } }
+                      - { label: "Légende", name: "caption", widget: "string", required: false }
+                  - label: "Planche de présentation (se construit au scroll)"
+                    name: "board"
+                    widget: "object"
+                    fields:
+                      - { label: "Dossier de la planche (bg.jpg, p0.jpg…, meta.json)", name: "src", widget: "string", hint: "ex : images/boards/yokai-systeme" }
+                      - { label: "Titre", name: "title", widget: "string" }

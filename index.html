@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arthur Ho-Wan — SVBR® · Portfolio 2026</title>
-  <meta name="description" content="Directeur artistique, motion & UX·UI designer — Paris. Identités, habillages animés et interfaces." />
+  <meta name="description" content="Arthur Ho-Wan — directeur artistique, motion & UX·UI designer à Paris. 2GZR, YOKAI, Monopoly × Arcane, INDA, À la bonne croquette." />
 
   <!-- Partage social (Open Graph) -->
   <meta property="og:title" content="Arthur Ho-Wan — SVBR® · Portfolio" />
   <meta property="og:description" content="Directeur artistique, motion & UX·UI designer — Paris." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="images/uploads/2gzr-hero.jpg" />
+  <meta property="og:image" content="images/uploads/2gzr-flash.jpg" />
   <meta name="theme-color" content="#0E0D0B" />
 
   <!-- Favicon (monogramme AH cobalt) -->
@@ -27,7 +27,15 @@
   <link rel="stylesheet" href="css/styles.css" />
 
   <!-- Préchargement du premier visuel (affichage immédiat du hero) -->
-  <link rel="preload" as="image" href="images/uploads/2gzr-hero.jpg" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/uploads/2gzr-flash.jpg" fetchpriority="high" />
+
+  <!-- Three.js (scènes WebGL) -->
+  <script type="importmap">
+    { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    } }
+  </script>
 </head>
 <body data-view="featured">
 
@@ -68,6 +76,8 @@
         <span class="sep">·</span>
         <a href="#index" data-view-link="index" data-scramble>INDEX</a>
         <span class="sep">·</span>
+        <a href="#about" data-view-link="about" data-scramble>ABOUT</a>
+        <span class="sep">·</span>
         <a href="#contact" data-view-link="contact" data-scramble>CONTACT</a>
       </nav>
       <button class="burger mono" id="burger" aria-label="Menu">☰</button>
@@ -84,7 +94,6 @@
         <span class="play__ring"></span>
         <svg viewBox="0 0 24 24" class="play__tri"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg>
       </button>
-      <p class="hero__note mono">◼ VISUEL PLEIN CADRE — IMAGE / VIDÉO</p>
     </div>
 
     <div class="hero__legend mono">⇦ ⇨ NAVIGUER &nbsp;·&nbsp; SCROLL &nbsp;·&nbsp; GLISSER &nbsp;·&nbsp; CLIC = OUVRIR</div>
@@ -92,16 +101,17 @@
     <div class="hero__bottom">
       <div class="hero__project" id="heroProject" data-cursor="OUVRIR">
         <span class="hero__num mono" id="heroNum">(01)</span>
-        <h1 class="hero__title" id="heroTitle">Neøn Festival</h1>
-        <p class="hero__cat mono" id="heroCat">IDENTITÉ VISUELLE &amp; MOTION — 2025</p>
+        <h1 class="hero__title" id="heroTitle">SVBR®</h1>
+        <p class="hero__tagline" id="heroTagline"></p>
+        <p class="hero__cat mono" id="heroCat"></p>
       </div>
       <div class="hero__nav">
-        <span class="hero__count mono"><span id="heroIdx">01</span> / <span id="heroTotal">06</span></span>
+        <span class="hero__count mono"><span id="heroIdx">01</span> / <span id="heroTotal">05</span></span>
         <div class="hero__arrows mono">
           <button class="hero__arrow" id="prevBtn" data-scramble>[←] PRÉC.</button>
           <button class="hero__arrow" id="nextBtn" data-scramble>SUIV. [→]</button>
         </div>
-        <span class="hero__next-name mono" id="nextName">SUIVANT — Orbit OS</span>
+        <span class="hero__next-name mono" id="nextName"></span>
       </div>
     </div>
 
@@ -111,7 +121,7 @@
   <!-- ══════════ VIEW · INDEX ══════════ -->
   <section class="view view--index" id="view-index">
     <div class="index__head">
-      <span class="mono index__label">INDEX — <span id="indexCount">06</span> PROJETS</span>
+      <span class="mono index__label">INDEX — <span id="indexCount">05</span> PROJETS</span>
       <button class="mono view-close" data-view-link="featured" data-scramble>FERMER ✕</button>
     </div>
     <div class="index__grid" id="indexGrid"></div>
@@ -120,6 +130,7 @@
 
   <!-- ══════════ VIEW · PROJECT (étude de cas, scrollable) ══════════ -->
   <section class="view view--project" id="view-project">
+    <span class="readbar" id="readBar"></span>
     <div class="project__scroll" id="projectScroll">
 
       <!-- HERO plein écran -->
@@ -127,7 +138,7 @@
         <div class="project__bg" id="projectBg"></div>
         <div class="phero__top mono">
           <button class="project__back" data-view-link="index" data-scramble>[←] INDEX</button>
-          <span id="projectCounter">PROJET N°01 / 06</span>
+          <span id="projectCounter"></span>
           <span class="phero__coord">48.85°N 2.35°E</span>
         </div>
         <div class="hero__center">
@@ -135,13 +146,13 @@
             <span class="play__ring"></span>
             <svg viewBox="0 0 24 24" class="play__tri"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg>
           </button>
-          <p class="hero__note mono">◼ VISUEL PLEIN CADRE — remplacer</p>
         </div>
         <div class="phero__bottom">
           <div>
             <span class="mono" id="pbNum">(01)</span>
-            <h2 class="phero__title" id="pcTitle">Neøn Festival</h2>
-            <p class="mono phero__cat" id="pcCat">IDENTITÉ VISUELLE &amp; MOTION — 2025</p>
+            <h2 class="phero__title" id="pcTitle"></h2>
+            <p class="phero__tagline" id="pcTagline"></p>
+            <p class="mono phero__cat" id="pcCat"></p>
           </div>
           <span class="mono phero__cue">↓ DÉFILER</span>
         </div>
@@ -150,18 +161,19 @@
       <!-- INFOS (façon champs Agency/Industry/Category) -->
       <div class="pinfo">
         <div class="pinfo__col">
-          <p class="pinfo__lead" id="pcDesc">Système d'identité génératif pensé pour le mouvement, du print au réseau.</p>
+          <span class="mono pinfo__label">LE PROJET</span>
+          <p class="pinfo__lead" id="pcDesc"></p>
           <a class="pinfo__figma mono" id="pcFigma" href="#" target="_blank" rel="noopener" data-scramble data-cursor="OUVRIR">ACCÉDER AUX FICHIERS FIGMA ↗</a>
         </div>
         <dl class="pinfo__meta mono">
-          <div><dt>RÔLE</dt><dd id="pcRole">DA · Identité · Motion</dd></div>
-          <div><dt>ANNÉE</dt><dd id="pcYear">2025</dd></div>
-          <div><dt>CLIENT</dt><dd id="pcClient">Neøn Festival</dd></div>
-          <div><dt>LIVRABLES</dt><dd id="pcDeliv">Logo, Charte, Habillage</dd></div>
+          <div><dt>RÔLE</dt><dd id="pcRole"></dd></div>
+          <div><dt>ANNÉE</dt><dd id="pcYear"></dd></div>
+          <div><dt>CLIENT</dt><dd id="pcClient"></dd></div>
+          <div><dt>LIVRABLES</dt><dd id="pcDeliv"></dd></div>
         </dl>
       </div>
 
-      <!-- GALERIE (pleine largeur / 2-up alternés) -->
+      <!-- RÉCIT : chapitres, visuels et scène 3D (data.story) -->
       <div class="pgallery" id="pGallery"></div>
 
       <!-- NAVIGATION PROJET -->
@@ -170,10 +182,11 @@
           <button id="pPrev" data-scramble>[←] PROJET PRÉCÉDENT</button>
           <button id="backTop" data-scramble>RETOUR EN HAUT [↑]</button>
         </div>
-        <a class="pnext" id="pNextFooter" data-cursor="SUIVANT">
+        <a class="pnext" id="pNextFooter" href="#" data-cursor="SUIVANT">
+          <span class="pnext__bg" id="pNextBg"></span>
           <span class="mono pnext__label">PROJET SUIVANT</span>
-          <span class="pnext__title" id="pNextTitle">Orbit OS</span>
-          <span class="mono pnext__cat" id="pNextCat">PRODUIT · UI/UX — 2025 &nbsp;→</span>
+          <span class="pnext__title" id="pNextTitle"></span>
+          <span class="mono pnext__cat" id="pNextCat"></span>
         </a>
       </div>
 
@@ -184,7 +197,7 @@
   <section class="view view--about" id="view-about">
     <div class="about__top mono">
       <span>ABOUT / STUDIO — 48.85°N 2.35°E</span>
-      <span>◼ PORTRAIT — remplacer par une photo</span>
+      <span>DA · MOTION · UI/UX — BRASSART</span>
     </div>
     <h2 class="about__stmt" id="aboutStmt">Un studio d'une personne, <em>entre le studio et la rue.</em></h2>
     <aside class="pcard pcard--about">
@@ -249,7 +262,7 @@
       </a>
     </nav>
     <div class="menu__info mono">
-      <div><span class="menu__info-title">PROJETS / 06</span><ul id="menuProjects"></ul></div>
+      <div><span class="menu__info-title">PROJETS / <span id="menuCount">05</span></span><ul id="menuProjects"></ul></div>
       <div><span class="menu__info-title">CONTACT</span><p>arthur@ho-wan.net</p></div>
       <div style="display:none" data-note="réactiver quand les comptes pro seront prêts"><span class="menu__info-title">SUIVRE</span><p><a href="#" data-scramble>LINKEDIN ↗</a> <a href="#" data-scramble>INSTAGRAM ↗</a> <a href="#" data-scramble>BEHANCE ↗</a></p></div>
     </div>
@@ -271,6 +284,7 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
   <script src="js/main.js"></script>
+  <script type="module" src="js/gl/index.js"></script>
 
   <!-- Redirection après invitation / login Netlify Identity -->
   <script>

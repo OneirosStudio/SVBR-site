@@ -8,9 +8,8 @@ gsap.registerPlugin(Observer, SplitText, ScrollTrigger);
 
 /* ── DATA (fallback si le JSON ne charge pas) ─ */
 let PROJECTS = [
-  { title: "Neøn Festival", cat: "IDENTITÉ VISUELLE & MOTION — 2025", color: "#3344F0", dark: false,
-    role: "DA · Identité · Motion", year: "2025", client: "Neøn Festival", deliv: "Logo, Charte, Habillage",
-    desc: "Système d'identité génératif pensé pour le mouvement.", image: "", video: "" },
+  { title: "SVBR®", cat: "PORTFOLIO — 2026", color: "#0E0D0B", dark: false, accent: "#C4E72E", tagline: "",
+    role: "", year: "2026", client: "", deliv: "", desc: "", image: "", video: "" },
 ];
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#§/¦≠";
 const $ = (s, c = document) => c.querySelector(s);
@@ -21,12 +20,21 @@ let current = 0;
 let projCurrent = 0;
 let busy = false;
 let activeView = "featured";
+let heroGL = null;      // hero WebGL (null = repli CSS)
+const isMobile = window.matchMedia("(max-width: 900px)").matches;
+const pad2 = (n) => String(n).padStart(2, "0");
+const slug = (t) => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 /* charge les projets depuis le CMS/JSON */
 async function loadProjects() {
   try {
     const r = await fetch("data/projects.json", { cache: "no-store" });
     const j = await r.json();
+    // projets sous NDA : fichier local non versionné (absent en ligne → ignoré)
+    try {
+      const lr = await fetch("data/projects.local.json", { cache: "no-store" });
+      if (lr.ok) j.projects = [...j.projects, ...((await lr.json()).projects || [])];
+    } catch { /* pas de projets locaux */ }
     if (j.projects?.length) {
       PROJECTS = j.projects.map((p) => ({
         title: p.title, year: p.year || "",
@@ -36,6 +44,9 @@ async function loadProjects() {
         role: p.role || "", client: p.client || "", deliv: p.deliverables || "",
         desc: p.description || "", image: p.image || "", video: p.video || "",
         figma: p.figmaUrl || "",
+        accent: p.accent || "#C4E72E",
+        tagline: p.tagline || "",
+        story: Array.isArray(p.story) ? p.story : null,
         gallery: Array.isArray(p.gallery) ? p.gallery.filter(Boolean) : [],
         layout: Array.isArray(p.galleryLayout) ? p.galleryLayout : null,
       }));
@@ -136,19 +147,19 @@ const heroTitle = $("#heroTitle");
 
 function applyProject(i, skipTitle = false, skipBg = false) {
   const p = PROJECTS[i];
-  $("#heroNum").textContent = `(0${i + 1})`;
+  $("#heroNum").textContent = `(${pad2(i + 1)})`;
   if (!skipTitle) heroTitle.textContent = p.title;
   $("#heroCat").textContent = p.cat;
-  $("#heroIdx").textContent = `0${i + 1}`;
+  $("#heroTagline").textContent = p.tagline;
+  $("#heroIdx").textContent = pad2(i + 1);
   $("#nextName").textContent = `SUIVANT — ${PROJECTS[(i + 1) % PROJECTS.length].title}`;
   // skipBg : pendant la transition, le fond de base ne doit PAS être repeint
   // en plein balayage (l'ancienne image disparaîtrait d'un coup — "saut")
-  if (!skipBg) paintBg($("#heroBg"), p);
-  $(".hero__note").style.opacity = hasMedia(p) ? 0 : 0.75;
+  if (!skipBg && !heroGL) paintBg($("#heroBg"), p);
   // bouton play : uniquement si le projet a une vidéo de fond
-  $("#heroPlay").style.display = p.video ? "" : "none";
+  $("#heroPlay").style.display = p.video && !heroGL ? "" : "none";
   const fg = p.dark ? "#0E0D0B" : "#FFFFFF";
-  gsap.set("#view-featured", { color: fg });
+  gsap.set("#view-featured", { color: fg, "--accent": p.accent });
   $$(".hero__progress i b").forEach((b, k) => gsap.to(b, { scaleX: k === i ? 1 : 0, duration: 0.6, ease: "power2.out" }));
 }
 
@@ -170,32 +181,40 @@ function titleIn() {
       onComplete: () => { if (introSplit) { introSplit.revert(); introSplit = null; } introTween = null; } });
 }
 function metaIn() {
-  gsap.fromTo(["#heroNum", "#heroCat", ".hero__nav", ".hero__legend"],
+  gsap.fromTo(["#heroNum", "#heroCat", "#heroTagline", ".hero__nav", ".hero__legend"],
     { y: 18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7, ease: "power3.out", stagger: 0.07 });
 }
 
 /* anti-spam : délai obligatoire entre deux switches (molette rapide,
    trackpad à inertie…) pour ne jamais sauter d'étape */
 let lastSwitch = 0;
-const SWITCH_COOLDOWN = 800; // ms de repos APRÈS la fin de l'animation
+const SWITCH_COOLDOWN = 450; // ms de repos APRÈS la fin de l'animation
 
 function goTo(i, dir = 1) {
   const now = performance.now();
   if (busy || now - lastSwitch < SWITCH_COOLDOWN) return;
   const next = (i + PROJECTS.length) % PROJECTS.length;
-  if (rm) { current = next; applyProject(next); lastSwitch = now; return; }
+  if (rm) { current = next; applyProject(next); heroGL?.show(next); lastSwitch = now; return; }
   busy = true;
+  // WebGL : on attend que le visuel entrant soit décodé, puis on lance la transition
+  if (heroGL) heroGL.prepare(next).then(() => runSwitch(next, dir), () => { busy = false; });
+  else runSwitch(next, dir);
+}
+function runSwitch(next, dir) {
   const p = PROJECTS[next];
 
   const bgNext = $("#heroBgNext");
-  paintBg(bgNext, p);
-  /* balayage vertical accompagnant la cascade du titre :
-     dir > 0 (projet suivant) → tout glisse VERS LE HAUT : l'image se révèle
-     de bas en haut ; au retour (dir < 0), l'inverse */
-  gsap.set(bgNext, { opacity: 1, clipPath: dir > 0 ? "inset(100% 0% 0% 0%)" : "inset(0% 0% 100% 0%)" });
-  const mediaIn = bgNext.querySelector(".bg-media");
-  const mediaOut = $("#heroBg").querySelector(".bg-media");
-  if (mediaIn) gsap.set(mediaIn, { yPercent: 4 * dir, scale: 1.12 });
+  let mediaIn = null, mediaOut = null;
+  if (!heroGL) {
+    paintBg(bgNext, p);
+    /* balayage vertical accompagnant la cascade du titre :
+       dir > 0 (projet suivant) → tout glisse VERS LE HAUT : l'image se révèle
+       de bas en haut ; au retour (dir < 0), l'inverse */
+    gsap.set(bgNext, { opacity: 1, clipPath: dir > 0 ? "inset(100% 0% 0% 0%)" : "inset(0% 0% 100% 0%)" });
+    mediaIn = bgNext.querySelector(".bg-media");
+    mediaOut = $("#heroBg").querySelector(".bg-media");
+    if (mediaIn) gsap.set(mediaIn, { yPercent: 4 * dir, scale: 1.12 });
+  }
 
   /* ── crossfade en cascade : l'ancien titre MONTE pendant que le
      nouveau arrive (clone superposé) — aucun échange brutal de texte ── */
@@ -215,13 +234,15 @@ function goTo(i, dir = 1) {
       heroTitle.textContent = p.title; // …aussitôt remplacé (même frame, aucun flash)
       splitIn.revert();
       clone.remove();
-      /* bascule atomique : on DÉPLACE le média déjà décodé de next → base
-         (aucun re-chargement, aucun flash, une vidéo continue de jouer) */
-      const bg = $("#heroBg");
-      bg.style.background = p.color;
-      bg.innerHTML = "";
-      while (bgNext.firstChild) bg.appendChild(bgNext.firstChild);
-      gsap.set(bgNext, { opacity: 0 });
+      if (!heroGL) {
+        /* bascule atomique : on DÉPLACE le média déjà décodé de next → base
+           (aucun re-chargement, aucun flash, une vidéo continue de jouer) */
+        const bg = $("#heroBg");
+        bg.style.background = p.color;
+        bg.innerHTML = "";
+        while (bgNext.firstChild) bg.appendChild(bgNext.firstChild);
+        gsap.set(bgNext, { opacity: 0 });
+      }
       busy = false;
       lastSwitch = performance.now(); // le cooldown démarre à la FIN de l'anim
     },
@@ -229,13 +250,14 @@ function goTo(i, dir = 1) {
 
   tl.to(splitOut.chars, { yPercent: -110 * dir, autoAlpha: 0, duration: 0.55, ease: "power3.in",
         stagger: { each: 0.022, from: dir > 0 ? "start" : "end" } }, 0)
-    .to(["#heroNum", "#heroCat"], { autoAlpha: 0, y: -12 * dir, duration: 0.3 }, 0)
-    .to(bgNext, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.9, ease: "power3.inOut" }, 0.2)
+    .to(["#heroNum", "#heroCat", "#heroTagline"], { autoAlpha: 0, y: -12 * dir, duration: 0.3 }, 0)
     .add(() => { current = next; applyProject(next, true, true); }, 0.35) // méta/segments SANS toucher au titre ni au fond
     .to(splitIn.chars, { yPercent: 0, rotate: 0, autoAlpha: 1, duration: 0.8, ease: "power4.out",
         stagger: { each: 0.026, from: dir > 0 ? "start" : "end" } }, 0.4)
-    .fromTo(["#heroNum", "#heroCat"], { autoAlpha: 0, y: 16 * dir },
+    .fromTo(["#heroNum", "#heroCat", "#heroTagline"], { autoAlpha: 0, y: 16 * dir },
         { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: 0.06 }, 0.55);
+  if (heroGL) tl.add(heroGL.transition(next, dir, 1.2), 0.08);
+  else tl.to(bgNext, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.9, ease: "power3.inOut" }, 0.2);
 
   /* travelling léger : l'image entrante glisse et se pose avec la cascade,
      l'ancienne est doucement poussée dans le même sens (profondeur) */
@@ -279,7 +301,7 @@ function buildDataUI() {
   const prog = $("#heroProgress");
   prog.innerHTML = "";
   PROJECTS.forEach(() => { const i = document.createElement("i"); i.appendChild(document.createElement("b")); prog.appendChild(i); });
-  $("#heroTotal").textContent = `0${PROJECTS.length}`;
+  $("#heroTotal").textContent = pad2(PROJECTS.length);
   // grille index
   const grid = $("#indexGrid");
   grid.innerHTML = "";
@@ -290,18 +312,20 @@ function buildDataUI() {
     a.dataset.cursor = "OUVRIR";
     a.innerHTML = `
       <span class="icard__bg" style="background:${p.color}">${p.image ? `<img src="${p.image}" class="bg-media" alt="">` : ""}</span>
-      <span class="icard__top mono"><span>(0${i + 1})</span><span class="icard__arrow">↗</span></span>
-      <span><span class="icard__title">${p.title}</span><br/><span class="icard__cat mono">${p.cat}</span></span>`;
+      <span class="icard__top mono"><span>(${pad2(i + 1)})</span><span class="icard__arrow">↗</span></span>
+      <span><span class="icard__title">${p.title}</span><br/><span class="icard__tag">${p.tagline}</span><span class="icard__cat mono">${p.cat}</span></span>`;
     a.addEventListener("click", (e) => { e.preventDefault(); openProject(i); });
     grid.appendChild(a);
   });
-  $("#indexCount").textContent = `0${PROJECTS.length}`;
+  $("#indexCount").textContent = pad2(PROJECTS.length);
+  $("#menuCount").textContent = pad2(PROJECTS.length);
   // liste menu
   const ul = $("#menuProjects");
   ul.innerHTML = "";
   PROJECTS.forEach((p, i) => {
     const li = document.createElement("li");
-    li.textContent = `0${i + 1} — ${p.title}`;
+    li.textContent = `${pad2(i + 1)} — ${p.title}`;
+    li.addEventListener("click", () => openProject(i));
     ul.appendChild(li);
   });
   window._bindCursor?.($("#indexGrid"));
@@ -315,8 +339,6 @@ const shadeFor = (p, k) => SHADES.filter((c) => c.toLowerCase() !== p.color.toLo
 function buildGallery(p) {
   const wrap = $("#pGallery");
   wrap.innerHTML = "";
-  galleryST.forEach((st) => st && st.kill());
-  galleryST = [];
   // images du CMS, sinon 5 placeholders colorés
   const items = p.gallery && p.gallery.length ? p.gallery : [null, null, null, null, null];
   // disposition explicite ("full"/"half" par visuel, cf. Figma) sinon motif alterné
@@ -372,24 +394,211 @@ function buildGallery(p) {
   }
 }
 
+/* ── RÉCIT : chapitres, médias et scène 3D (data.story) ── */
+const isVideo = (src) => /\.(mp4|webm)$/i.test(src);
+function mediaEl(src, alt) {
+  if (isVideo(src)) {
+    const v = document.createElement("video");
+    Object.assign(v, { muted: true, loop: true, playsInline: true, preload: "none" });
+    v.setAttribute("muted", ""); v.className = "bg-media"; v.dataset.lazyplay = ""; v.dataset.src = src;
+    return v;
+  }
+  // chargement maison (voir galleryReveals) : fiable dans le conteneur scrollable
+  const im = document.createElement("img");
+  Object.assign(im, { alt, decoding: "async", className: "bg-media" });
+  im.dataset.src = src;
+  return im;
+}
+const esc = (t = "") => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function buildStory(p) {
+  const wrap = $("#pGallery");
+  wrap.innerHTML = "";
+  wrap.classList.add("pstory");
+  let chap = 0, fig = 0;
+  p.story.forEach((b) => {
+    if (b.type === "chapter") {
+      chap++;
+      const el = document.createElement("div");
+      el.className = "pchap";
+      el.innerHTML = `
+        <span class="pchap__num mono">${pad2(chap)} —</span>
+        <h3 class="pchap__title">${esc(b.title)}</h3>
+        ${b.text ? `<p class="pchap__text">${esc(b.text)}</p>` : ""}`;
+      wrap.appendChild(el);
+    } else if (b.type === "media") {
+      const layout = ["half", "auto", "full"].includes(b.layout) ? b.layout : "full";
+      const row = document.createElement("div");
+      row.className = "pg-row pg-row--" + layout;
+      (b.items || []).forEach((src) => {
+        fig++;
+        const it = document.createElement("figure");
+        it.className = "pg-item";
+        it.appendChild(mediaEl(src, p.title));
+        const cap = document.createElement("span");
+        cap.className = "pg-item__cap mono";
+        cap.textContent = `FIG. ${pad2(fig)}${b.caption && b.items.length === 1 ? " — " + b.caption.toUpperCase() : ""}`;
+        it.appendChild(cap);
+        if (layout === "full" && !isVideo(src)) {
+          const im = it.querySelector("img");
+          const mark = () => { if (im.naturalHeight > im.naturalWidth * 1.05) it.classList.add("pg-item--contain"); };
+          im.complete && im.naturalWidth ? mark() : im.addEventListener("load", mark, { once: true });
+        }
+        row.appendChild(it);
+      });
+      if (b.caption && b.items.length > 1) row.dataset.caption = b.caption;
+      wrap.appendChild(row);
+    } else if (b.type === "board") {
+      const st = document.createElement("section");
+      st.className = "pboard";
+      st.dataset.src = b.src;
+      st.style.setProperty("--stage-accent", p.accent);
+      st.innerHTML = `
+        <div class="pboard__sticky">
+          <div class="pboard__head">
+            <span class="mono pboard__label">◼ PRÉSENTATION — DÉFILER</span>
+            <h3 class="pboard__title">${esc(b.title || "")}</h3>
+            <span class="pboard__bar"><b></b></span>
+          </div>
+          <div class="pboard__stage"><div class="pboard__frame"></div></div>
+        </div>`;
+      wrap.appendChild(st);
+    }
+  });
+}
+
+/* ── PLANCHES : la présentation de branding se construit pièce par pièce au scroll ── */
+async function buildBoard(st) {
+  const src = st.dataset.src;
+  let meta;
+  try { meta = await (await fetch(`${src}/meta.json`)).json(); } catch { return null; }
+  const frame = $(".pboard__frame", st), stage = $(".pboard__stage", st);
+  const ar = meta.w / meta.h;
+  const img = (s) => { const i = new Image(); i.alt = ""; i.decoding = "async"; i.src = s; return i; };
+  const bg = img(`${src}/bg.jpg`); bg.className = "pboard__bg";
+  frame.appendChild(bg);
+  const pieces = meta.pieces.map((pc, i) => {
+    const el = document.createElement("div");
+    el.className = `pboard__piece pboard__piece--${pc.kind}`;
+    const [x, y, w, h] = pc.box;
+    Object.assign(el.style, { left: `${x * 100}%`, top: `${y * 100}%`, width: `${w * 100}%`, height: `${h * 100}%` });
+    const im = img(`${src}/p${i}.jpg`); el.appendChild(im);
+    frame.appendChild(el);
+    return { el, im, kind: pc.kind };
+  });
+  // la planche entière tient toujours à l'écran (contain), centrée sous le titre
+  const layout = () => {
+    const vw = stage.clientWidth, vh = stage.clientHeight;
+    if (!vw || !vh) return;
+    const w = Math.min(vw, vh * ar), h = w / ar;
+    Object.assign(frame.style, { width: `${w}px`, height: `${h}px`, left: `${(vw - w) / 2}px`, top: `${(vh - h) / 2}px` });
+  };
+  layout();
+  const ro = new ResizeObserver(layout); ro.observe(stage);
+  const all = [bg, ...pieces.map((p) => p.im)];
+  await Promise.all(all.map((i) => (i.complete ? null : new Promise((r) => { i.onload = i.onerror = r; }))));
+  st.classList.add("is-live");
+  return { pieces, frame, ro };
+}
+
+function boardTimeline(s) {
+  const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+  const n = s.pieces.length, span = 0.78, step = span / n;
+  tl.fromTo(s.frame, { scale: 1.04 }, { scale: 1, duration: 1, ease: "none" }, 0);
+  s.pieces.forEach((pc, i) => {
+    const at = 0.04 + i * step, dur = step * 1.6;
+    if (pc.kind === "swatch") {
+      tl.fromTo(pc.el, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: dur, immediateRender: true }, at);
+    } else if (pc.kind === "float") {
+      tl.fromTo(pc.el, { autoAlpha: 0, yPercent: 10, scale: 0.96 }, { autoAlpha: 1, yPercent: 0, scale: 1, duration: dur, immediateRender: true }, at);
+    } else {
+      tl.fromTo(pc.el, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: dur, immediateRender: true }, at)
+        .fromTo(pc.im, { scale: 1.18 }, { scale: 1, duration: dur * 1.3, immediateRender: true }, at);
+    }
+  });
+  tl.to({}, { duration: 0.12 }); // temps de pose : la planche complète reste à l'écran
+  return tl;
+}
+
+let boards = [];
+function disposeBoards() {
+  boards.forEach((x) => { x.tl && x.tl.kill(); x.ro && x.ro.disconnect(); });
+  boards = [];
+}
+
 function galleryReveals() {
-  if (rm) return;
   const scroller = $("#projectScroll");
-  // révélation des visuels au scroll (clip + montée)
-  $$(".pg-item").forEach((it) => {
-    const tw = gsap.fromTo(it,
-      { clipPath: "inset(10% 5% 10% 5%)", y: 60, autoAlpha: 0.4 },
-      { clipPath: "inset(0% 0% 0% 0%)", y: 0, autoAlpha: 1, duration: 1, ease: "power3.out",
-        scrollTrigger: { trigger: it, scroller, start: "top 88%" } });
+  // vidéos : ne jouent que visibles (économie batterie)
+  const vio = new IntersectionObserver((ents) => ents.forEach((en) => {
+    const v = en.target;
+    if (en.isIntersecting) v.play().catch(() => {}); else v.pause();
+  }), { root: scroller, threshold: 0.15 });
+  $$("video[data-lazyplay]", scroller).forEach((v) => vio.observe(v));
+  // médias : chargés 1,5 écran avant d'apparaître (le lazy natif est peu fiable
+  // dans une vue cachée / un conteneur à scroll interne) + recalcul des déclencheurs
+  let rf;
+  const relayout = () => { clearTimeout(rf); rf = setTimeout(() => ScrollTrigger.refresh(), 200); };
+  const lio = new IntersectionObserver((ents) => ents.forEach((en) => {
+    if (!en.isIntersecting) return;
+    const el = en.target;
+    lio.unobserve(el);
+    el.addEventListener(el.tagName === "VIDEO" ? "loadeddata" : "load", relayout, { once: true });
+    el.src = el.dataset.src;
+    if (el.tagName === "VIDEO") { el.preload = "auto"; el.load(); }
+  }), { root: scroller, rootMargin: "150% 0px" });
+  $$("[data-src]", scroller).forEach((el) => lio.observe(el));
+  galleryST.push({ kill: () => { vio.disconnect(); lio.disconnect(); } });
+
+  // planches : se construisent au fil du scroll (section « collante »)
+  $$(".pboard", scroller).forEach((st) => {
+    const bar = $(".pboard__bar b", st);
+    const rec = { tl: null, p: 0 };
+    boards.push(rec);
+    buildBoard(st).then((s) => {
+      if (!s || !st.isConnected) return;
+      rec.tl = boardTimeline(s); rec.ro = s.ro;
+      rec.tl.progress(rm ? 1 : rec.p);
+    });
+    const t = ScrollTrigger.create({
+      trigger: st, scroller, start: "top top", end: "bottom bottom", scrub: rm ? false : 0.5,
+      onUpdate(self) {
+        rec.p = self.progress;
+        if (rec.tl) rec.tl.progress(rm ? 1 : self.progress);
+        bar.style.transform = `scaleX(${self.progress})`;
+      },
+    });
+    galleryST.push(t);
+  });
+  if (rm) return;
+
+  // chapitres : numéro qui se décode, titre ligne à ligne, texte qui monte
+  $$(".pchap", scroller).forEach((ch) => {
+    const title = $(".pchap__title", ch);
+    const outer = new SplitText(title, { type: "lines", linesClass: "split-line" });
+    const inner = new SplitText(outer.lines, { type: "lines" });
+    const tl = gsap.timeline({ scrollTrigger: { trigger: ch, scroller, start: "top 82%" } });
+    tl.add(() => scramble($(".pchap__num", ch), null, 0.7))
+      .fromTo(inner.lines, { yPercent: 110 }, { yPercent: 0, duration: 1, ease: "power4.out", stagger: 0.09 }, 0)
+      .fromTo($(".pchap__text", ch), { y: 28, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, ease: "power3.out" }, 0.2);
+    galleryST.push(tl.scrollTrigger);
+  });
+
+  // visuels : rideau qui s'ouvre + zoom arrière, puis parallaxe
+  $$(".pg-item", scroller).forEach((it) => {
+    const media = it.querySelector(".bg-media");
+    const tw = gsap.timeline({ scrollTrigger: { trigger: it, scroller, start: "top 90%" } });
+    tw.fromTo(it, { clipPath: "inset(14% 8% 14% 8%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.3, ease: "expo.out" });
+    if (media) tw.fromTo(media, { scale: 1.25 }, { scale: 1, duration: 1.6, ease: "expo.out" }, 0);
+    tw.fromTo($(".pg-item__cap", it), { autoAlpha: 0, y: 10 }, { autoAlpha: 0.75, y: 0, duration: 0.6 }, 0.5);
     galleryST.push(tw.scrollTrigger);
-    // parallax léger sur le média (pas sur les rangées "auto" : l'image est dans le flux)
-    const media = it.closest(".pg-row--auto") ? null : it.querySelector(".bg-media");
-    if (media) {
-      const par = gsap.fromTo(media, { yPercent: -6 }, { yPercent: 6, ease: "none",
+    const auto = it.closest(".pg-row--auto");
+    if (media && !auto) {
+      const par = gsap.fromTo(media, { yPercent: -5 }, { yPercent: 5, ease: "none", immediateRender: false,
         scrollTrigger: { trigger: it, scroller, scrub: true, start: "top bottom", end: "bottom top" } });
       galleryST.push(par.scrollTrigger);
     }
   });
+
   // infos + footer suivant
   const lead = gsap.fromTo([".pinfo__lead", ".pinfo__figma"], { y: 34, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, stagger: 0.1, ease: "power3.out",
     scrollTrigger: { trigger: ".pinfo", scroller, start: "top 82%" } });
@@ -397,17 +606,30 @@ function galleryReveals() {
     scrollTrigger: { trigger: ".pinfo", scroller, start: "top 78%" } });
   const nxt = gsap.fromTo(".pnext__title", { x: -40, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out",
     scrollTrigger: { trigger: ".pnext", scroller, start: "top 85%" } });
-  galleryST.push(lead.scrollTrigger, meta.scrollTrigger, nxt.scrollTrigger);
+  // le visuel du hero recule et s'assombrit quand on entre dans le récit
+  const ph = gsap.to("#projectBg", { yPercent: 18, scale: 1.08, filter: "brightness(0.45)", ease: "none",
+    scrollTrigger: { trigger: ".phero", scroller, start: "top top", end: "bottom top", scrub: true } });
+  galleryST.push(lead.scrollTrigger, meta.scrollTrigger, nxt.scrollTrigger, ph.scrollTrigger);
+  // barre de lecture
+  const rd = ScrollTrigger.create({ scroller, start: 0, end: "max", onUpdate: (s) => gsap.set("#readBar", { scaleX: s.progress }) });
+  galleryST.push(rd);
 }
 
 function populateProject(i) {
   const p = PROJECTS[i];
   projCurrent = i;
+  try { history.replaceState(null, "", `#projet-${slug(p.title)}`); } catch {}
+  galleryST.forEach((st) => st && st.kill());
+  galleryST = [];
+  disposeBoards();
   paintBg($("#projectBg"), p);
-  $("#projectCounter").textContent = `PROJET N°0${i + 1} / 0${PROJECTS.length}`;
-  $("#pbNum").textContent = `(0${i + 1})`;
+  gsap.set("#projectBg", { clearProps: "transform,filter" });
+  $("#view-project").style.setProperty("--accent", p.accent);
+  $("#projectCounter").textContent = `PROJET N°${pad2(i + 1)} / ${pad2(PROJECTS.length)}`;
+  $("#pbNum").textContent = `(${pad2(i + 1)})`;
   $("#pcTitle").textContent = p.title;
   $("#pcCat").textContent = p.cat;
+  $("#pcTagline").textContent = p.tagline;
   $("#pcDesc").textContent = p.desc;
   // lien Figma du projet : visible seulement si une URL est renseignée
   const fig = $("#pcFigma");
@@ -417,20 +639,23 @@ function populateProject(i) {
   $("#pcYear").textContent = p.year;
   $("#pcClient").textContent = p.client;
   $("#pcDeliv").textContent = p.deliv;
-  $$("#view-project .hero__note").forEach((n) => (n.style.opacity = hasMedia(p) ? 0 : 0.75));
-  // bouton play du hero projet : uniquement si vidéo
   $$("#view-project .play").forEach((b) => (b.style.display = p.video ? "" : "none"));
   gsap.set(".phero", { color: p.dark ? "#0E0D0B" : "#FFFFFF" });
-  // footer "projet suivant" (couleur du prochain projet)
+  // footer "projet suivant" (visuel + couleur du prochain projet)
   const np = PROJECTS[(i + 1) % PROJECTS.length];
   const nf = $("#pNextFooter");
   nf.style.background = np.color;
   nf.style.color = np.dark ? "#0E0D0B" : "#FFFFFF";
+  $("#pNextBg").style.backgroundImage = np.image ? `url("${np.image}")` : "none";
   $("#pNextTitle").textContent = np.title;
   $("#pNextCat").textContent = `${np.cat}  →`;
-  buildGallery(p);
+  if (p.story && p.story.length) buildStory(p);
+  else { $("#pGallery").classList.remove("pstory"); buildGallery(p); }
   $("#projectScroll").scrollTop = 0;
+  window._bindCursor?.($("#pGallery"));
+  // images lazy : leur chargement décale la page → on recalcule les déclencheurs
   galleryReveals();
+  ScrollTrigger.refresh();
 }
 function projectIntro() {
   const split = new SplitText("#pcTitle", { type: "chars" });
@@ -438,11 +663,17 @@ function projectIntro() {
     { yPercent: 0, autoAlpha: 1, duration: 0.8, ease: "power4.out", stagger: 0.025, onComplete: () => split.revert() });
   gsap.fromTo([".phero__top", ".phero__bottom"], { y: 14, autoAlpha: 0 },
     { y: 0, autoAlpha: 1, duration: 0.6, ease: "power3.out", stagger: 0.08 });
+  gsap.fromTo("#projectBg", { scale: 1.18 }, { scale: 1, duration: 1.8, ease: "expo.out" });
   ScrollTrigger.refresh();
 }
-function openProject(i) { populateProject(i); switchView("project"); }
-$("#pPrev").addEventListener("click", () => { populateProject((projCurrent - 1 + PROJECTS.length) % PROJECTS.length); projectIntro(); });
-$("#pNextFooter").addEventListener("click", (e) => { e.preventDefault(); populateProject((projCurrent + 1) % PROJECTS.length); projectIntro(); });
+function openProject(i) {
+  const p = PROJECTS[i];
+  if (activeView === "project") return curtainTo(() => { populateProject(i); }, p, () => projectIntro());
+  populateProject(i);
+  switchView("project", p);
+}
+$("#pPrev").addEventListener("click", () => openProject((projCurrent - 1 + PROJECTS.length) % PROJECTS.length));
+$("#pNextFooter").addEventListener("click", (e) => { e.preventDefault(); openProject((projCurrent + 1) % PROJECTS.length); });
 $("#backTop").addEventListener("click", () => $("#projectScroll").scrollTo({ top: 0, behavior: rm ? "auto" : "smooth" }));
 
 /* ── VIEW MANAGER ──────────────────────────── */
@@ -464,28 +695,46 @@ function introFor(view) {
     gsap.fromTo([".contact__mail", ".contact__socials", ".cform"], { y: 26, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7, ease: "power3.out", stagger: 0.09, delay: 0.2 });
   }
 }
-function switchView(view) {
-  if (view === activeView) { closeMenu(); return; }
+/* rideau de transition : couleur + libellé du projet ciblé si fourni */
+let curtainBusy = false;
+function curtainTo(swap, proj, after) {
+  if (curtainBusy) return;
+  curtainBusy = true;
+  clearTimeout(curtainTo._guard);
+  curtainTo._guard = setTimeout(() => (curtainBusy = false), 3000);
   const curtain = $("#curtain"), label = $("#curtainLabel");
-  label.textContent = VIEW_LABELS[view];
+  curtain.style.background = proj ? proj.color : "";
+  curtain.style.color = proj ? (proj.dark ? "#0E0D0B" : "#FFFFFF") : "";
   closeMenu(true);
-  const tl = gsap.timeline();
+  const tl = gsap.timeline({ onComplete: () => (curtainBusy = false) });
   tl.set(curtain, { visibility: "visible", transformOrigin: "bottom" })
-    .to(curtain, { scaleY: 1, duration: rm ? 0 : 0.55, ease: "power4.inOut" })
+    .to(curtain, { scaleY: 1, duration: rm ? 0 : 0.6, ease: "power4.inOut" })
     .fromTo(label, { autoAlpha: 0, letterSpacing: "0.6em" }, { autoAlpha: 1, letterSpacing: "0.35em", duration: 0.3 }, "<+=0.2")
-    .add(() => {
-      $$(".view").forEach((v) => v.classList.remove("is-active"));
-      $(`#view-${view}`).classList.add("is-active");
-      document.body.dataset.view = view;
-      activeView = view;
-      $("#viewTag").textContent = VIEW_LABELS[view];
-      $$(".header__nav a").forEach((a) => a.classList.toggle("is-active", a.dataset.viewLink === view));
-    })
-    .to(label, { autoAlpha: 0, duration: 0.2 }, "+=0.1")
+    .add(swap)
+    .to(label, { autoAlpha: 0, duration: 0.2 }, "+=0.15")
     .set(curtain, { transformOrigin: "top" })
-    .to(curtain, { scaleY: 0, duration: rm ? 0 : 0.55, ease: "power4.inOut" })
+    .to(curtain, { scaleY: 0, duration: rm ? 0 : 0.6, ease: "power4.inOut" })
     .set(curtain, { visibility: "hidden" })
-    .add(() => introFor(view), "-=0.35");
+    .add(() => after && after(), "-=0.4");
+  label.textContent = proj ? proj.title.toUpperCase() : label.textContent;
+}
+function switchView(view, proj = null) {
+  if (view === activeView) { closeMenu(); return; }
+  $("#curtainLabel").textContent = VIEW_LABELS[view];
+  curtainTo(() => {
+    const leaving = activeView;
+    $$(".view").forEach((v) => v.classList.remove("is-active"));
+    $(`#view-${view}`).classList.add("is-active");
+    document.body.dataset.view = view;
+    activeView = view;
+    $("#viewTag").textContent = VIEW_LABELS[view];
+    $$(".header__nav a").forEach((a) => a.classList.toggle("is-active", a.dataset.viewLink === view));
+    // GPU : le hero ne tourne que visible, la scène 3D n'existe que dans l'étude de cas
+    if (heroGL) view === "featured" ? heroGL.resume() : heroGL.pause();
+    if (leaving === "project") disposeBoards();
+    if (view !== "project") try { history.replaceState(null, "", `#${view}`); } catch {}
+    if (view === "project") ScrollTrigger.refresh();
+  }, proj, () => introFor(view));
 }
 $$("[data-view-link]").forEach((el) =>
   el.addEventListener("click", (e) => { e.preventDefault(); switchView(el.dataset.viewLink); })
@@ -547,8 +796,19 @@ gsap.set([".hero__center", ".header", ".hero__bottom"], { autoAlpha: 0 });
 
 window.addEventListener("load", async () => {
   await loadProjects();
+  // hero WebGL (repli CSS automatique si WebGL / module indisponible)
+  if (window.SVBR_GL) {
+    try {
+      const gl = window.SVBR_GL.createHero($("#view-featured"), PROJECTS, gsap);
+      await Promise.race([gl.show(0), new Promise((r) => setTimeout(r, 4000))]);
+      heroGL = gl;
+      document.body.classList.add("gl-on");
+    } catch (e) { console.warn("Hero WebGL indisponible", e); }
+  }
   buildDataUI();
   applyProject(0);
+  // lien direct vers un projet : #projet-2gzr
+  const deep = location.hash.match(/^#projet-(.+)$/);
 
   const count = { v: 0 };
   const pre = $("#preloader");
@@ -562,5 +822,10 @@ window.addEventListener("load", async () => {
     .set(pre, { display: "none" })
     .add(() => { titleIn(); metaIn(); }, "-=0.25")
     .fromTo(".header", { y: -24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7, ease: "power3.out" }, "-=0.3")
-    .fromTo(".hero__center", { scale: 0.92, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, "-=0.5");
+    .fromTo(".hero__center", { scale: 0.92, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, "-=0.5")
+    .add(() => {
+      if (!deep) return;
+      const i = PROJECTS.findIndex((p) => slug(p.title) === deep[1]);
+      if (i >= 0) openProject(i);
+    });
 });

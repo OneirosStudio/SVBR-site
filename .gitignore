@@ -14,3 +14,12 @@ images/Yokai/
 images/INDA/
 images/Monopoly x Arcane/
 images/À la bonne croquette/
+
+# Projets sous NDA (Anesia : publication interdite avant le lancement, contrat art. 20)
+# → visibles en local uniquement, jamais commités ni déployés
+data/projects.local.json
+images/private/
+
+# Moodboards de travail (références Cosmos, non publiées)
+_moodboards/
+_candidates/

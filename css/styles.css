@@ -424,3 +424,167 @@ body[data-view="index"] .live-dot { background: var(--brand); }
 .pg-row--auto .pg-item { height: auto; padding: 0; display: block; }
 .pg-row--auto .bg-media { position: static; width: 100%; height: auto; object-fit: unset; }
 .pg-row--auto .pg-item__cap { position: absolute; left: 24px; bottom: 22px; }
+
+/* ═══════════════════════════════════════════════
+   V3 — WebGL, récit des projets, scènes 3D
+   ═══════════════════════════════════════════════ */
+
+/* ── HERO WEBGL ────────────────────────────── */
+.hero__gl { position: absolute; inset: 0; z-index: 1; display: block; }
+body.gl-on .hero__bg, body.gl-on .hero__bg--next { display: none; }
+.view--featured::after {
+  /* voile bas pour la lisibilité du titre sur le rendu WebGL */
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 26%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.55) 100%);
+}
+.hero__tagline, .phero__tagline {
+  font-family: var(--f-serif); font-style: italic; font-weight: 400;
+  font-size: clamp(22px, 2.3vw, 34px); letter-spacing: -0.01em; line-height: 1.1;
+  margin-top: 10px; opacity: 0.92;
+}
+.hero__cat { margin-top: 12px; }
+.hero__legend { bottom: auto; top: 118px; }
+.hero__num { color: var(--accent, currentColor); }
+.hero__progress i b { background: var(--accent, #fff); }
+
+/* ── INDEX (5 projets : grande carte + 2×2) ── */
+.index__grid { grid-template-columns: 1.35fr 1fr 1fr; }
+.icard:first-child { grid-row: span 2; }
+.icard::after {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.6) 100%);
+}
+.icard__tag { display: block; font-family: var(--f-serif); font-style: italic; font-size: clamp(16px, 1.4vw, 21px); opacity: 0.9; margin: 2px 0 6px; }
+
+/* ── CURTAIN aux couleurs du projet ────────── */
+.curtain { color: var(--bg-inverse); }
+.curtain__label { color: inherit; }
+
+/* ── PROJET : barre de lecture + hero ──────── */
+.readbar {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px; z-index: 8;
+  background: var(--accent, var(--lime)); transform: scaleX(0); transform-origin: left; pointer-events: none;
+}
+.project__bg { will-change: transform, filter; }
+.pinfo__label { display: block; font-size: 11px; font-weight: 400; opacity: 0.55; margin-bottom: 18px; letter-spacing: 0.15em; }
+
+/* ── RÉCIT : chapitres ─────────────────────── */
+.pgallery.pstory { gap: 24px; padding-bottom: 80px; }
+.pchap {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr); gap: 18px 60px;
+  padding: clamp(80px, 15vh, 170px) 0 clamp(36px, 6vh, 70px);
+}
+.pchap__num { grid-column: 1; grid-row: 1 / span 2; font-weight: 400; font-size: 12px; opacity: 0.6; padding-top: 0.9em; color: var(--accent, #fff); }
+.pchap__title {
+  grid-column: 2; font-family: var(--f-display); font-weight: 600;
+  font-size: clamp(34px, 4.6vw, 72px); letter-spacing: -0.035em; line-height: 0.98; max-width: 16ch;
+}
+.pchap__text { grid-column: 2; max-width: 52ch; font-size: clamp(16px, 1.25vw, 19px); line-height: 1.6; opacity: 0.78; }
+.pg-item { background: #141311; }
+.pg-row--half .pg-item { height: min(78vh, 760px); }
+.pg-item__cap { text-shadow: 0 1px 12px rgba(0,0,0,0.5); }
+
+/* ── SCÈNE 3D (section collante pilotée au scroll) ── */
+.pstage { position: relative; height: 340vh; margin: 40px calc(var(--pad) * -1); }
+.pstage__sticky { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; }
+.pstage__bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(90% 70% at 50% 42%, color-mix(in srgb, var(--stage-color) 62%, #0E0D0B) 0%, color-mix(in srgb, var(--stage-color) 18%, #070606) 62%, #050505 100%);
+}
+.pstage__bg::after {
+  content: ""; position: absolute; inset: 0; opacity: 0.08; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.pstage__canvas { position: absolute; inset: 0; cursor: grab; }
+.pstage__canvas.is-grab { cursor: grabbing; }
+.pstage__canvas canvas { display: block; opacity: 0; transition: opacity 1.2s var(--ease-out); }
+.pstage.is-live .pstage__canvas canvas { opacity: 1; }
+.pstage__ui { position: absolute; inset: 0; pointer-events: none; padding: 110px var(--pad) 48px; display: flex; flex-direction: column; justify-content: space-between; }
+.pstage__head { max-width: 520px; }
+.pstage__ui { background: linear-gradient(90deg, rgba(5,5,5,0.55) 0%, rgba(5,5,5,0.15) 38%, rgba(5,5,5,0) 55%); }
+.pstage[data-model="bag"] .pstage__ui { background: linear-gradient(90deg, rgba(246,237,224,0.75) 0%, rgba(246,237,224,0.2) 38%, rgba(246,237,224,0) 55%); }
+.pstage__label { font-size: 11px; font-weight: 400; letter-spacing: 0.15em; color: var(--stage-accent); }
+.pstage__title { font-family: var(--f-display); font-weight: 600; font-size: clamp(34px, 4.4vw, 68px); letter-spacing: -0.035em; line-height: 0.98; margin-top: 14px; }
+.pstage__steps { list-style: none; display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
+.pstage__steps li {
+  display: flex; gap: 14px; align-items: baseline;
+  font-family: var(--f-display); font-weight: 500; font-size: clamp(16px, 1.4vw, 22px); letter-spacing: -0.01em;
+  opacity: 0.32; transform: translateX(0); transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
+}
+.pstage__steps li span { font-size: 11px; opacity: 0.8; }
+.pstage__steps li.is-on { opacity: 1; transform: translateX(12px); }
+.pstage__steps li.is-on span { color: var(--stage-accent); }
+.pstage__foot { display: flex; justify-content: space-between; align-items: center; gap: 24px; font-size: 11px; font-weight: 400; opacity: 0.7; }
+.pstage__bar { flex: 0 0 min(260px, 40vw); height: 2px; background: rgba(255,255,255,0.2); position: relative; overflow: hidden; }
+.pstage__bar b { position: absolute; inset: 0; background: var(--stage-accent); transform: scaleX(0); transform-origin: left; }
+.pstage__fallback { display: none; }
+.pstage.is-static { height: 100vh; }
+.pstage.is-static .pstage__fallback { display: block; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.45; }
+.pstage.is-static .pstage__steps li { opacity: 1; }
+/* la scène croquette a son propre décor clair : UI en sombre */
+.pstage[data-model="bag"] .pstage__ui { color: #2a1a10; --stage-accent: #E8541A; }
+body.light-chrome .header { color: #2a1a10; }
+body.light-chrome .reg::before, body.light-chrome .reg::after { background: #2a1a10; }
+.pstage[data-model="bag"] .pstage__bar { background: rgba(0,0,0,0.15); }
+.pstage[data-model="bag"] .pstage__bg { background: #efe4d3; }
+
+/* ── PROJET SUIVANT avec visuel ────────────── */
+.pnext { min-height: 62vh; justify-content: flex-end; }
+.pnext > *:not(.pnext__bg) { position: relative; z-index: 1; }
+.pnext__bg {
+  position: absolute; inset: 0; z-index: 0; background-size: cover; background-position: center;
+  opacity: 0.38; transform: scale(1.06); transition: transform 1.2s var(--ease-out), opacity .8s;
+}
+.pnext:hover .pnext__bg { transform: scale(1); opacity: 0.55; }
+
+@media (max-width: 900px) {
+  .index__grid { grid-template-columns: 1fr; }
+  .icard:first-child { grid-row: auto; min-height: 300px; }
+  .pchap { grid-template-columns: 1fr; padding-top: 72px; }
+  .pchap__num, .pchap__title, .pchap__text { grid-column: 1; grid-row: auto; }
+  .pg-row--half .pg-item { height: 62vh; }
+  .pstage { height: 280vh; }
+  .pstage__ui { padding: 92px 20px 28px; }
+  .pstage__ui { justify-content: flex-start; background: linear-gradient(0deg, rgba(5,5,5,0.7) 0%, rgba(5,5,5,0) 38%), linear-gradient(180deg, rgba(5,5,5,0.45) 0%, rgba(5,5,5,0) 30%); }
+  .pstage[data-model="bag"] .pstage__ui { background: linear-gradient(0deg, rgba(246,237,224,0.85) 0%, rgba(246,237,224,0) 38%); }
+  .pstage__steps { margin-top: auto; margin-bottom: 18px; gap: 6px; }
+  .pstage__steps li { font-size: 15px; }
+  .pstage__hint { display: none; }
+  .pnext { min-height: 46vh; }
+}
+
+/* scène 3D : indicateur pendant la compilation / chargement des textures */
+.pstage__canvas::after {
+  content: "CHARGEMENT DE LA SCÈNE 3D…"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.15em; opacity: 0.55; pointer-events: none;
+  transition: opacity .6s;
+}
+.pstage.is-live .pstage__canvas::after, .pstage.is-static .pstage__canvas::after { opacity: 0; }
+
+/* ═══════════════════════════════════════════════
+   V5 — PLANCHES DE PRÉSENTATION (se construisent au scroll)
+   ═══════════════════════════════════════════════ */
+.pboard { position: relative; height: 300vh; margin: 40px calc(var(--pad) * -1); }
+.pboard__sticky {
+  position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden;
+  display: flex; flex-direction: column; padding: 96px var(--pad) 40px; gap: 26px;
+  background: var(--bg-inverse);
+}
+.pboard__head { display: flex; align-items: flex-end; gap: 28px; flex-wrap: wrap; }
+.pboard__label { font-size: 11px; font-weight: 400; letter-spacing: 0.15em; color: var(--stage-accent); width: 100%; }
+.pboard__title { font-family: var(--f-display); font-weight: 600; font-size: clamp(30px, 3.6vw, 56px); letter-spacing: -0.035em; line-height: 1; }
+.pboard__bar { flex: 0 0 min(220px, 30vw); height: 2px; margin-left: auto; margin-bottom: 10px; background: rgba(255,255,255,0.18); position: relative; overflow: hidden; }
+.pboard__bar b { position: absolute; inset: 0; background: var(--stage-accent); transform: scaleX(0); transform-origin: left; }
+.pboard__stage { position: relative; flex: 1; min-height: 0; }
+.pboard__frame { position: absolute; transform-origin: 50% 50%; opacity: 0; transition: opacity .8s var(--ease-out); box-shadow: 0 30px 80px rgba(0,0,0,0.45); }
+.pboard.is-live .pboard__frame { opacity: 1; }
+.pboard__bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.pboard__piece { position: absolute; overflow: hidden; will-change: clip-path, transform; }
+.pboard__piece img { display: block; width: 100%; height: 100%; transform-origin: 50% 50%; }
+@media (max-width: 900px) {
+  .pboard { height: 220vh; }
+  .pboard__sticky { padding: 84px 16px 24px; }
+  .pboard__bar { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .pboard { height: auto; } .pboard__sticky { position: relative; height: 70vh; } }
