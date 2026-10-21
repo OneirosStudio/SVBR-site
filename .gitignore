@@ -23,3 +23,6 @@ images/private/
 # Moodboards de travail (références Cosmos, non publiées)
 _moodboards/
 _candidates/
+
+# Candidatures (données personnelles : lettres, suivi) · jamais commitées ni déployées
+_candidatures/
